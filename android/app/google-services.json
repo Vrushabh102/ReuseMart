@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "106510018646",
+    "project_id": "reusemart-caf9b",
+    "storage_bucket": "reusemart-caf9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106510018646:android:9af49de4b86b2f3362f3f7",
+        "android_client_info": {
+          "package_name": "com.example.seller_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBakY-sDkIh_HYo8fidIKrf6jlk4OO3Y9I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

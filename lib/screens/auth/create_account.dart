@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_auth.dart';
+import 'package:seller_app/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
+import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/screens/home_screen.dart';
-import 'package:seller_app/widget_styles/button_styles.dart';
+import 'package:seller_app/custom_styles/button_styles.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -73,7 +74,7 @@ class SignInScreenState extends State<SignInScreen> {
                     height: 10,
                   ),
                   // for confirming password
-                  TextInputField(   
+                  TextInputField(
                       autofillHints: const [AutofillHints.password],
                       controller: _createPassController,
                       hintText: 'Create password',
@@ -129,6 +130,18 @@ class SignInScreenState extends State<SignInScreen> {
         const SnackBar(content: Text('Some Error Occured')),
       );
     } else {
+      // store user data to the server
+      Authentication firestore = Authentication();
+
+      // converting data to user model
+      final usermodel = UserModel(
+          email: _emailController.text,
+          username: _nameController.text,
+          userUid: user.uid);
+
+      // function to save user data to firestore
+      firestore.saveUserData(usermodel);
+
       // redirecting to homescreen if user is valid
       Navigator.pushAndRemoveUntil(
           context,

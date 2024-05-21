@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_auth.dart';
+import 'package:seller_app/authentication/firebase_methods.dart';
 import 'package:seller_app/screens/auth/login_screen.dart';
 import 'package:seller_app/screens/display_screens/display_account_screen.dart';
 import 'package:seller_app/screens/display_screens/display_chat_screen.dart';
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const ChatScreen(),
     const SellScreen(),
     const MyAdsScreen(),
-    const AccountScreen()
+    AccountScreen()
   ];
 
   @override
@@ -34,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout),
           onPressed: () {
-            Authentication authentication = Authentication();
-            authentication.logOutUser();
+            Authentication authenticaion = Authentication();
+            authenticaion.logOutUser();
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),

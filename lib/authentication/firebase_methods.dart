@@ -1,9 +1,18 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:seller_app/models/sell_item_model.dart';
+import 'package:seller_app/models/user_model.dart';
 
-// class to handle all the firebase authentication related stuff
+// class to handle all the firebase related stuff
 class Authentication {
+  // firebase authentication instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // firebase database instance
+  final FirebaseFirestore _fs = FirebaseFirestore.instance;
+
+  // FIRESTORE METHODS
 
   // firebase function to create new user
   Future<User?> createUserAuth(
@@ -18,6 +27,38 @@ class Authentication {
       return null;
     }
   }
+
+  // firestore function to store user data to the database
+  Future<void> saveUserData(UserModel userModel) async {
+    // saving user name and email
+    await _fs
+        .collection('users')
+        .doc(userModel.userUid)
+        .set(userModel.toJson());
+  }
+
+  Future<UserModel> fetchSingleData(String email) async {
+    QuerySnapshot snapshot =
+        await _fs.collection('users').where('email', isEqualTo: email).get();
+    final userData = snapshot.docs
+        .map((e) =>
+            UserModel.fromSnapshot(e as DocumentSnapshot<Map<String, dynamic>>))
+        .single;
+    return userData;
+  }
+
+  Future<List<UserModel>> fetchListData() async {
+    final snapshot = await _fs.collection('users').get();
+    final userData =
+        snapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList();
+    return userData;
+  }
+
+  Future<void> saveItemData(SellItemModel sellItemModel) async {
+    _fs.collection('users').doc(_auth.currentUser!.uid).collection('items_posted').doc();
+  }
+
+  // FIREBASE AUTHENTICATION METHODS
 
   // firebase function to login user
   Future<User?> loginUser(String email, String password) async {
@@ -48,6 +89,7 @@ class Authentication {
       return true;
     } on FirebaseAuthException catch (e) {
       // show snackbar
+      log('error forgotting pass $e');
       return false;
     }
   }

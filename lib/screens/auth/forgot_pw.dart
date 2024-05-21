@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_auth.dart';
+import 'package:seller_app/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
-import 'package:seller_app/widget_styles/button_styles.dart';
+import 'package:seller_app/custom_styles/button_styles.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -56,9 +56,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     // isValid -> true : email sended successfully
     //            false : some error occured
-    isValid ? ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Check email to reset password'))
-    ) : ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('email not valid')));
+    isValid
+        ? ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Check email to reset password')))
+        : ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('email not valid')));
   }
 }

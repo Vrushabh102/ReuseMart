@@ -2,13 +2,13 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_auth.dart';
+import 'package:seller_app/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/screens/auth/create_account.dart';
 import 'package:seller_app/screens/auth/forgot_pw.dart';
 import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/utils/colors.dart';
-import 'package:seller_app/widget_styles/button_styles.dart';
+import 'package:seller_app/custom_styles/button_styles.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -90,9 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         'Forgot Password?',
-                        style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 14),
+                        style: TextStyle(color: primaryColor, fontSize: 14),
                       ),
                     ),
                   ),
@@ -143,9 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         'Create new account',
-                        style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 14),
+                        style: TextStyle(color: primaryColor, fontSize: 14),
                       ),
                     ),
                   ),
@@ -164,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Authentication fireAuth = Authentication();
     User? user =
         await fireAuth.loginUser(_emailController.text, _passController.text);
+    log('${user!.email}');
     if (user == null) {
       // showing snackbar if user is null
       ScaffoldMessenger.of(context).showSnackBar(

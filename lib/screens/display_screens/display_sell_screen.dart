@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/models/sell_item_model.dart';
@@ -47,7 +47,6 @@ class _SellScreenState extends State<SellScreen> {
                 controller: _itemNameController,
                 hintText: 'Name of Item',
                 obscure: false,
-                icon: Icons.crop_square_sharp,
                 autofillHints: const []),
             const SizedBox(
               height: 20,
@@ -56,14 +55,12 @@ class _SellScreenState extends State<SellScreen> {
                 controller: _descriptionController,
                 hintText: 'Type description of item',
                 obscure: false,
-                icon: Icons.crop_square_sharp,
                 autofillHints: const []),
             const SizedBox(height: 20),
             TextInputField(
                 controller: _priceController,
                 hintText: 'Enter price',
                 obscure: false,
-                icon: Icons.price_change_rounded,
                 autofillHints: const []),
             const SizedBox(height: 20),
             ElevatedButton(

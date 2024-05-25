@@ -4,14 +4,12 @@ class TextInputField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscure;
-  final IconData icon;
   final List<String> autofillHints;
   const TextInputField({
     super.key,
     required this.controller,
     required this.hintText,
     required this.obscure,
-    required this.icon,
     required this.autofillHints,
   });
 
@@ -27,16 +25,18 @@ class _TextInputFieldState extends State<TextInputField> {
       controller: widget.controller,
       obscureText: widget.obscure,
       decoration: InputDecoration(
-        prefixIcon: Icon(widget.icon),
         hintText: widget.hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+        hintStyle: const TextStyle(fontWeight: FontWeight.w300),
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey, width: 10),
         ),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: Colors.green, width: 1.4)),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.grey, width: 0.5), // Default border color
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.blue, width: 2.0), // Focused border color and width
         ),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/screens/auth/login_screen.dart';
 import 'package:seller_app/screens/display_screens/display_account_screen.dart';
 import 'package:seller_app/screens/display_screens/display_chat_screen.dart';

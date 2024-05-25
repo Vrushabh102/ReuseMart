@@ -2,11 +2,12 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/utils/generate_username.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -60,7 +61,6 @@ class SignInScreenState extends State<SignInScreen> {
                       autofillHints: const [AutofillHints.name],
                       controller: _nameController,
                       hintText: 'Full Name',
-                      icon: Icons.lock_open_outlined,
                       obscure: false),
                   const SizedBox(height: 10),
                   // for Name
@@ -68,7 +68,6 @@ class SignInScreenState extends State<SignInScreen> {
                       autofillHints: const [AutofillHints.email],
                       controller: _emailController,
                       hintText: 'Email',
-                      icon: Icons.email_outlined,
                       obscure: false),
                   const SizedBox(
                     height: 10,
@@ -78,8 +77,7 @@ class SignInScreenState extends State<SignInScreen> {
                       autofillHints: const [AutofillHints.password],
                       controller: _createPassController,
                       hintText: 'Create password',
-                      obscure: true,
-                      icon: Icons.lock_outline),
+                      obscure: true,),
                   const SizedBox(
                     height: 30,
                   ),
@@ -136,10 +134,13 @@ class SignInScreenState extends State<SignInScreen> {
       // converting data to user model
       final usermodel = UserModel(
           email: _emailController.text,
-          username: _nameController.text,
-          userUid: user.uid);
+          fullName : _nameController.text,
+          username: GenerateRandomUserName().generateRandomUserName(),
+          userUid: user.uid,
+          photoUrl: null);
 
       // function to save user data to firestore
+      // TODO
       firestore.saveUserData(usermodel);
 
       // redirecting to homescreen if user is valid

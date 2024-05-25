@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/utils/colors.dart';
 

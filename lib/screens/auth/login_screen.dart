@@ -2,13 +2,19 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
+import 'package:seller_app/models/user_model.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/screens/auth/create_account.dart';
 import 'package:seller_app/screens/auth/forgot_pw.dart';
 import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/utils/generate_username.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
 
+  // 0.04 * height == 35 height in size
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -30,128 +38,182 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final maxHeight = MediaQuery.of(context).size.height;
-    final maxWidth = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    // to check current theme and change colors
+    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
+
+    log('$height');
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-                height: maxHeight * 0.4,
-                width: maxWidth * 0.9,
-                child: Image.asset('assets/images/file.png')),
-            Container(
-              padding: const EdgeInsets.all(2),
-              height: maxHeight * 0.56,
-              width: maxWidth * 0.9,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 22, color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  // for email
-                  AutofillGroup(
-                    child: Column(
-                      children: [
-                        TextInputField(
-                            autofillHints: const [AutofillHints.email],
-                            controller: _emailController,
-                            hintText: 'Email',
-                            icon: Icons.email_outlined,
-                            obscure: false),
-                        const SizedBox(height: 10),
-                        // for password
-                        TextInputField(
-                            autofillHints: const [AutofillHints.password],
-                            controller: _passController,
-                            hintText: 'Password',
-                            icon: Icons.lock_open_outlined,
-                            obscure: true),
-                        const SizedBox(height: 3),
-                      ],
-                    ),
-                  ),
-                  Center(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgotPasswordScreen()),
-                            (route) => false);
-                      },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: primaryColor, fontSize: 14),
+        backgroundColor: isLightTheme ? Colors.white : scaffoldDarkBackground,
+        resizeToAvoidBottomInset: false,
+        body: Center(
+          child: Column(
+            children: [
+              // container with image height 0.45 of all screen
+              Container(
+                // padding around image container
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+                height: height * 0.45,
+                width: width,
+                child: Image.asset('assets/images/login.png'),
+              ),
+
+              // Login TextInput Container
+              Container(
+                padding: const EdgeInsets.fromLTRB(22, 0, 30, 0),
+                height: height * 0.25,
+                width: width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Login',
+                        style: TextStyle(
+                          fontSize: 22,
+                        )),
+                    SizedBox(height: height * 0.02),
+
+                    // textfields
+                    AutofillGroup(
+                      child: Column(
+                        children: [
+                          // Email TextField
+                          Row(
+                            children: [
+                              const Icon(Icons.person),
+                              SizedBox(width: width * 0.03),
+                              Expanded(
+                                child: TextInputField(
+                                  controller: _emailController,
+                                  hintText: 'Email',
+                                  obscure: false,
+                                  autofillHints: const [AutofillHints.email],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: height * 0.015),
+
+                          //pass TextField
+                          Row(
+                            children: [
+                              const Icon(Icons.lock),
+                              SizedBox(width: width * 0.03),
+                              Expanded(
+                                child: TextInputField(
+                                  controller: _passController,
+                                  hintText: 'Password',
+                                  obscure: true,
+                                  autofillHints: const [AutofillHints.password],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ),
 
-                  const SizedBox(
-                    height: 50,
-                  ),
-
-                  // login button
-                  ElevatedButton(
-                    onPressed: () async {
-                      // login user
-                      checkLogin();
-                    },
-                    style: loginButtonStyle(),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white),
+                    // forgot pass text
+                    Container(
+                      margin: EdgeInsets.only(top: height * 0.01),
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        child: Text(
+                          'Forgot Password',
+                          style: TextStyle(
+                              fontSize: 13.7,
+                              color: isLightTheme
+                                  ? lightClickableTextColor
+                                  : darkClickableTextColor),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgotPasswordScreen()));
+                        },
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
 
-                  const SizedBox(height: 10),
-                  const Center(child: Text('OR')),
-                  const SizedBox(height: 10),
+              // button container with height 0.3 of total
+              SizedBox(
+                height: height * 0.3,
+                width: width,
+                child: Column(
+                  children: [
+                    SizedBox(height: height * 0.035),
 
-                  ElevatedButton(
-                    onPressed: null,
-                    // sign in with google
-                    style: loginButtonStyle(),
-                    child: const Text(
-                      'Continue with Google',
-                      style: TextStyle(color: Colors.white),
+                    // login button
+                    ElevatedButton(
+                      onPressed: () {
+                        checkLogin();
+                      },
+                      style: loginButtonStyle().copyWith(
+                          minimumSize: MaterialStatePropertyAll(
+                              Size(width * 0.9, height * 0.06))),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(
-                    height: 8,
-                  ),
+                    SizedBox(height: height * 0.022),
 
-                  Center(
-                    child: InkWell(
+                    const Text(
+                      'OR',
+                      style: TextStyle(fontWeight: FontWeight.w400),
+                    ),
+
+                    SizedBox(height: height * 0.022),
+
+                    // google sing in button
+                    Container(
+                      decoration: googleButtonDecoration(),
+                      height: height * 0.06,
+                      width: width * 0.9,
+                      child: SignInButton(
+                        onPressed: () {
+                          // google sign in
+                          signInWithGoogle();
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        Buttons.Google,
+                        elevation: 0,
+                        text: 'Sign in with Google',
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.01),
+                    // create new account text
+                    InkWell(
                       onTap: () {
-                        Navigator.pushAndRemoveUntil(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignInScreen()),
-                            (route) => false);
+                                builder: (context) => const SignInScreen()));
                       },
                       child: Text(
                         'Create new account',
-                        style: TextStyle(color: primaryColor, fontSize: 14),
+                        style: TextStyle(
+                            fontSize: 13.7,
+                            color: isLightTheme
+                                ? lightClickableTextColor
+                                : darkClickableTextColor),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
+            ],
+          ),
+        ));
   }
 
   // function to check user data and to redirect to homescreen
@@ -160,18 +222,39 @@ class _LoginScreenState extends State<LoginScreen> {
     Authentication fireAuth = Authentication();
     User? user =
         await fireAuth.loginUser(_emailController.text, _passController.text);
-    log('${user!.email}');
-    if (user == null) {
-      // showing snackbar if user is null
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Some Error Occured')),
-      );
-    } else {
-      // redirecting to homescreen if user is valid
+    // redirecting to homescreen if user is valid
+    if (user != null) {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen(user: user)),
           (route) => false);
+    } else {
+      showSnackBar(context: context, message: 'user is null at login page');
+    }
+  }
+
+  // method to sign in with google and store user data to the database
+  void signInWithGoogle() async {
+    Authentication authentication = Authentication();
+    User? user = await authentication.SigninWithGoogle();
+    if (user != null) {
+      // store data to the firebase
+
+      // creating user model
+      UserModel userModel = UserModel(
+          email: user.email.toString(),
+          username: GenerateRandomUserName().generateRandomUserName(),
+          userUid: user.uid,
+          photoUrl: user.photoURL);
+
+      //saving data to the database using firebase methods
+      Authentication().saveUserData(userModel);
+
+      // navigating to homepage after saving user data to the databse
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } else {
+      // show snackbar
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:seller_app/models/sell_item_model.dart';
 import 'package:seller_app/models/user_model.dart';
 
@@ -55,10 +56,39 @@ class Authentication {
   }
 
   Future<void> saveItemData(SellItemModel sellItemModel) async {
-    _fs.collection('users').doc(_auth.currentUser!.uid).collection('items_posted').doc();
+    _fs
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .collection('items_posted')
+        .doc();
   }
 
   // FIREBASE AUTHENTICATION METHODS
+
+  //Google sign in method
+  Future<User?> SigninWithGoogle() async {
+    try {
+      
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      GoogleSignInAuthentication? authentication =
+          await googleUser?.authentication;
+
+      OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: authentication!.accessToken,
+          idToken: authentication.idToken);
+      UserCredential? userCredential =
+          await _auth.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        return userCredential.user;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      log('error at google sign in $error');
+    }
+  }
 
   // firebase function to login user
   Future<User?> loginUser(String email, String password) async {
@@ -77,6 +107,13 @@ class Authentication {
   // function to logout user
   void logOutUser() async {
     try {
+      GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: [
+          'email',
+        ],
+      );
+      await googleSignIn.signOut();
+      
       await _auth.signOut();
     } on FirebaseAuthException catch (e) {
       log('error logging out $e');

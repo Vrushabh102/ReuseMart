@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:seller_app/authentication/firebase_methods.dart';
+import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 
@@ -34,7 +34,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   autofillHints: const [AutofillHints.email],
                   controller: _controller,
                   hintText: 'Enter email associated with your account',
-                  icon: Icons.email_outlined,
                   obscure: false),
               const SizedBox(
                 height: 10,

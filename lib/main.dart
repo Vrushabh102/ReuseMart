@@ -13,8 +13,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MaterialApp(
-    theme: ThemeData(brightness: Brightness.light),
-    darkTheme: ThemeData(brightness: Brightness.dark),
+    theme: ThemeData(brightness: Brightness.light, fontFamily: 'Inter'),
+    darkTheme: ThemeData(brightness: Brightness.dark, fontFamily: 'Inter'),
 
     // to check the FirebaseAuth state of the user
     home: StreamBuilder(

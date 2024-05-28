@@ -21,7 +21,7 @@ class ItemContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 242,
-      height: 282,
+      height: 284,
       decoration:
           BoxDecoration(borderRadius: BorderRadius.circular(15), boxShadow: [
         BoxShadow(
@@ -45,7 +45,7 @@ class ItemContainer extends StatelessWidget {
             child: network ? Image.network(imagePath) : Image.asset(imagePath),
           ),
           Container(
-            height: 140,
+            height: 142,
             width: 242,
             decoration: const BoxDecoration(
               color: Colors.white,

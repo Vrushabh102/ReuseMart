@@ -43,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // to check current theme and change colors
     bool isLightTheme = Theme.of(context).brightness == Brightness.light;
 
-    log('$height');
     return Scaffold(
         backgroundColor: isLightTheme ? Colors.white : scaffoldDarkBackground,
         resizeToAvoidBottomInset: false,

@@ -62,13 +62,15 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedLabelStyle: const TextStyle(color: Colors.green),
         showUnselectedLabels: true,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: ImageIcon(AssetImage('assets/icons/home.png')),
+              label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: 'Chat'),
           BottomNavigationBarItem(
               icon: Icon(Icons.sell_outlined), label: 'Sell'),
           BottomNavigationBarItem(icon: Icon(Icons.ads_click), label: 'My ads'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: ImageIcon(AssetImage('assets/icons/person.png')),
             label: 'Account',
           ),
         ],

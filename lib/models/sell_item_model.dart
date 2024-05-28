@@ -1,7 +1,7 @@
 class SellItemModel {
   final String title;
   final String description;
-  final String photoUrl;
+  final List photoUrl;
   final String price;
   final bool showPersonalDetails;
 

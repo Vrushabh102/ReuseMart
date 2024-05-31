@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.logout),
           onPressed: () {
-            Authentication authenticaion = Authentication();
+            APIs authenticaion = APIs();
             authenticaion.logOutUser();
             Navigator.pushAndRemoveUntil(
                 context,

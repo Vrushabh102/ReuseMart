@@ -2,15 +2,14 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:seller_app/models/user_model.dart';
+import 'package:seller_app/screens/auth/enter_details.dart';
 import 'package:seller_app/services/authentication/firebase_methods.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/screens/auth/create_account.dart';
 import 'package:seller_app/screens/auth/forgot_pw.dart';
-import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/generate_username.dart';
@@ -26,8 +25,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
-
-  // 0.04 * height == 35 height in size
 
   @override
   void dispose() {
@@ -218,42 +215,50 @@ class _LoginScreenState extends State<LoginScreen> {
   // function to check user data and to redirect to homescreen
   void checkLogin() async {
     log('check login started');
-    Authentication fireAuth = Authentication();
+    APIs fireAuth = APIs();
     User? user =
         await fireAuth.loginUser(_emailController.text, _passController.text);
-    // redirecting to homescreen if user is valid
+    // redirecting to enter details if user is valid
     if (user != null) {
-      Navigator.pushAndRemoveUntil(
+      // displayname property is available user logged in with email & pass
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(user: user)),
-          (route) => false);
+          MaterialPageRoute(
+              builder: (context) => FillDetailsScreen(
+                    name: user.displayName,
+                    gender: 'Male',
+                  )));
     } else {
       showSnackBar(context: context, message: 'user is null at login page');
     }
   }
 
   // method to sign in with google and store user data to the database
-  void signInWithGoogle() async {
-    Authentication authentication = Authentication();
-    User? user = await authentication.SigninWithGoogle();
+  Future<void> signInWithGoogle() async {
+    APIs authentication = APIs();
+    User? user = await authentication.signInWithGoogle();
     if (user != null) {
-      // store data to the firebase
-
+      // save user data
       // creating user model
       UserModel userModel = UserModel(
           email: user.email.toString(),
+          gender: 'gender from create account not set yet',
           username: GenerateRandomUserName().generateRandomUserName(),
           userUid: user.uid,
           photoUrl: user.photoURL);
 
       //saving data to the database using firebase methods
-      Authentication().saveUserData(userModel);
+      APIs().saveUserData(userModel);
 
-      // navigating to homepage after saving user data to the databse
+      // goto the enter details page
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+          context,
+          MaterialPageRoute(
+              builder: ((context) => const FillDetailsScreen(
+                    gender: 'Male',
+                  ))));
     } else {
-      // show snackbar
+      showSnackBar(context: context, message: 'user not authenicated');
     }
   }
 }

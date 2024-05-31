@@ -1,11 +1,10 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/custom_widgets/advertisement_widget.dart';
 import 'package:seller_app/custom_widgets/display_image.dart';
-import 'package:seller_app/custom_widgets/advertisment_widget.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 class SelectImageScreen extends StatefulWidget {
@@ -19,6 +18,7 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   List<Uint8List>? images = [];
   bool showImages = false;
   int mainImageIndex = 0;
+  List<String>? downloadableImageUrls;
 
   @override
   Widget build(BuildContext context) {
@@ -83,28 +83,28 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                 ),
               ),
               if (showImages)
-                Container(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: ElevatedButton(
-                    style: loginButtonStyle().copyWith(
-                        minimumSize: MaterialStatePropertyAll(
-                            Size(width * 0.9, height * 0.06))),
-                    onPressed: () async {
-                      if (images != null && images!.isNotEmpty) {
-                        // go onto the next screen
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    DisplayItemScreen(images: this.images)));
-                      }
-                    },
-                    child: const Text(
-                      'Next',
-                      style: TextStyle(color: Colors.white),
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: ElevatedButton(
+                      style: loginButtonStyle().copyWith(
+                          minimumSize: MaterialStatePropertyAll(
+                              Size(width * 0.9, height * 0.06))),
+                      onPressed: () async {
+                        if (images != null && images!.isNotEmpty) {
+
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      DisplayItemScreen( isPosted: false,imagesInUint8: images)));
+                        }
+                      },
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
-                ),
+              ),
             ],
           ),
         ],

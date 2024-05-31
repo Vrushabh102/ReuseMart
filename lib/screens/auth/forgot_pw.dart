@@ -51,7 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void passwordReset() async {
-    bool isValid = await Authentication().forgotPass(_controller.text.trim());
+    bool isValid = await APIs().forgotPass(_controller.text.trim());
 
     // isValid -> true : email sended successfully
     //            false : some error occured

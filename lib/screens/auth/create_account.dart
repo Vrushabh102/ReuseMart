@@ -1,8 +1,6 @@
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:seller_app/screens/auth/login_screen.dart';
@@ -12,6 +10,7 @@ import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/generate_username.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -110,6 +109,12 @@ class SignInScreenState extends State<SignInScreen> {
                   ElevatedButton(
                     onPressed: () {
                       // create new account button
+                      if (_nameController.text.isEmpty ||
+                          _emailController.text.isEmpty ||
+                          _createPassController.text.isEmpty) {
+                        showSnackBar(
+                            context: context, message: 'Enter Details');
+                      }
                       checkAccount();
                     },
                     style: loginButtonStyle().copyWith(
@@ -173,8 +178,7 @@ class SignInScreenState extends State<SignInScreen> {
 
   // function to check user data and to redirect to homescreen
   void checkAccount() async {
-    log('check account started');
-    Authentication auth = Authentication();
+    APIs auth = APIs();
     User? user = await auth.createUserAuth(_nameController.text,
         _emailController.text, _createPassController.text);
     if (user == null) {
@@ -184,10 +188,11 @@ class SignInScreenState extends State<SignInScreen> {
       );
     } else {
       // store user data to the server
-      Authentication firestore = Authentication();
+      APIs firestore = APIs();
 
       // converting data to user model
       final usermodel = UserModel(
+          gender: 'gender from create account not set yet',
           email: _emailController.text,
           fullName: _nameController.text,
           username: GenerateRandomUserName().generateRandomUserName(),
@@ -207,20 +212,21 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   void signInWithGoogle() async {
-    Authentication authentication = Authentication();
-    User? user = await authentication.SigninWithGoogle();
+    APIs authentication = APIs();
+    User? user = await authentication.signInWithGoogle();
     if (user != null) {
       // store data to the firebase
 
       // creating user model
       UserModel userModel = UserModel(
           email: user.email.toString(),
+          gender: 'gender from create account not set yet',
           username: GenerateRandomUserName().generateRandomUserName(),
           userUid: user.uid,
           photoUrl: user.photoURL);
 
       //saving data to the database using firebase methods
-      Authentication().saveUserData(userModel);
+      APIs().saveUserData(userModel);
 
       // navigating to homepage after saving user data to the databse
       Navigator.push(

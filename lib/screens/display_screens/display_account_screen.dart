@@ -40,14 +40,14 @@ class AccountScreen extends StatelessWidget {
           FutureBuilder<UserModel>(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return Column(
+                return const Column(
                   children: [
-                    Text(snapshot.data!.username),
-                    const SizedBox(height: 20),
-                    Text(snapshot.data!.email),
-                    const SizedBox(height: 20),
-                    Text(snapshot.data!.userUid),
-                    const SizedBox(height: 20),
+                    //Text(snapshot.data!.username),
+                    SizedBox(height: 20),
+                    // Text(snapshot.data!.email),
+                    SizedBox(height: 20),
+                    // Text(snapshot.data!.userUid),
+                    SizedBox(height: 20),
                   ],
                 );
               } else if (snapshot.hasError) {
@@ -58,7 +58,7 @@ class AccountScreen extends StatelessWidget {
                 return CircularProgressIndicator(color: primaryColor);
               }
             },
-            future: Authentication().fetchSingleData(user!.email!),
+            future: APIs().fetchSingleUserData(user!.email!),
           )
         ],
       ),

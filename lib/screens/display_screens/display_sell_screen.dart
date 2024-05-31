@@ -1,19 +1,20 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
-import 'package:seller_app/models/sell_item_model.dart';
-import 'package:seller_app/screens/web_screen.dart';
+import 'package:seller_app/main.dart';
 import 'package:seller_app/screens/pick_image_screen.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
-class SellScreen extends StatefulWidget {
+class SellScreen extends ConsumerStatefulWidget {
   const SellScreen({super.key});
 
   @override
-  State<SellScreen> createState() => _SellScreenState();
+  ConsumerState<SellScreen> createState() => _SellScreenState();
 }
 
-class _SellScreenState extends State<SellScreen> {
+class _SellScreenState extends ConsumerState<SellScreen> {
   final _itemNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
@@ -69,24 +70,45 @@ class _SellScreenState extends State<SellScreen> {
               children: [
                 ElevatedButton(
                     onPressed: () {
-                      // add some data to the database for now
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SelectImageScreen()));
-                
+                      checkDetails();
                     },
                     style: loginButtonStyle(),
                     child: const Text(
                       'Next',
                       style: TextStyle(color: Colors.white),
                     )),
-                    
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void checkDetails() {
+    if (_itemNameController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        _priceController.text.isEmpty) {
+      showSnackBar(context: context, message: 'Enter details');
+    } else {
+      // all details are filled
+      addDetailsState();
+    }
+  }
+
+  // fun to add details to the state
+  void addDetailsState() {
+    final provider = ref.watch(advertisementProvider.notifier);
+    provider.setValues(
+        setName: _itemNameController.text,
+        setDescription: _descriptionController.text,
+        setPrice: _priceController.text);
+
+    _itemNameController.clear();
+    _descriptionController.clear();
+    _priceController.clear();
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const SelectImageScreen()));
   }
 }

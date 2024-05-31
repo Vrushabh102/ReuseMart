@@ -2,11 +2,11 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:seller_app/models/sell_item_model.dart';
+import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/models/user_model.dart';
 
 // class to handle all the firebase related stuff
-class Authentication {
+class APIs {
   // firebase authentication instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -38,37 +38,47 @@ class Authentication {
         .set(userModel.toJson());
   }
 
-  Future<UserModel> fetchSingleData(String email) async {
-    QuerySnapshot snapshot =
-        await _fs.collection('users').where('email', isEqualTo: email).get();
-    final userData = snapshot.docs
-        .map((e) =>
-            UserModel.fromSnapshot(e as DocumentSnapshot<Map<String, dynamic>>))
-        .single;
+  Future<UserModel> fetchSingleUserData(String email) async {
+    DocumentSnapshot snapshot =
+        await _fs.collection('users').doc(_auth.currentUser!.uid).get();
+    final userData = UserModel.fromSnapshot(
+        snapshot as DocumentSnapshot<Map<String, dynamic>>);
     return userData;
   }
 
-  Future<List<UserModel>> fetchListData() async {
-    final snapshot = await _fs.collection('users').get();
-    final userData =
-        snapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList();
-    return userData;
+  // fun to post advertisment to the database
+  Future<void> postAdvertisment(
+      {required AdvertisementModel sellItemModel,
+      required String docId}) async {
+    log('post ad firebase method');
+    _fs.collection('items_posted').doc(docId).set(sellItemModel.toJson());
   }
 
-  Future<void> saveItemData(SellItemModel sellItemModel) async {
-    _fs
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
+  // to fetch single advertisment data from the items_posted collection
+  Future<AdvertisementModel> fetchSingleAdvertismentDetails(
+      {required String email}) async {
+    QuerySnapshot snapshot = await _fs
         .collection('items_posted')
-        .doc();
+        .where('email', isEqualTo: email)
+        .get();
+
+    final adveratismentData = snapshot.docs
+        .map((e) => AdvertisementModel.fromSnapShot(
+            e as DocumentSnapshot<Map<String, dynamic>>))
+        .single;
+    return adveratismentData;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> fetchFeedAdvertisements() async {
+    final advertisements = await _fs.collection('items_posted').get();
+    return advertisements;
   }
 
   // FIREBASE AUTHENTICATION METHODS
 
   //Google sign in method
-  Future<User?> SigninWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
-      
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       GoogleSignInAuthentication? authentication =
@@ -88,9 +98,10 @@ class Authentication {
     } catch (error) {
       log('error at google sign in $error');
     }
+    return null;
   }
 
-  // firebase function to login user
+  // firebase function to login user with email and password
   Future<User?> loginUser(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -113,7 +124,7 @@ class Authentication {
         ],
       );
       await googleSignIn.signOut();
-      
+
       await _auth.signOut();
     } on FirebaseAuthException catch (e) {
       log('error logging out $e');

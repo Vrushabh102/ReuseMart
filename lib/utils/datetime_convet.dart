@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -5,7 +7,7 @@ class DateAndTime {
   String convertToTime(Timestamp timestamp) {
     // converting timestamp to datetime
     DateTime datetime = timestamp.toDate();
-
+    log(DateFormat.yMMMMd().add_jm().format(datetime));
     // format the datetime
     return DateFormat.yMMMMd().add_jm().format(datetime);
   }

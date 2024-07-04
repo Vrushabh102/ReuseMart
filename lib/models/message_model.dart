@@ -1,26 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {
-  final String senderEmail;
-  final String senderId;
-  final String receiverId;
   final String message;
-  final Timestamp timestamp;
+  final String senderId;
+  final String reciverId;
+  final Timestamp timestamp; // Use Timestamp for Firestore compatibility
 
-  MessageModel(
-      {required this.senderEmail,
-      required this.senderId,
-      required this.receiverId,
-      required this.message,
-      required this.timestamp});
+  MessageModel({
+    required this.senderId,
+    required this.reciverId,
+    required this.message,
+    required this.timestamp,
+  });
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'senderEmail' : senderEmail,
-      'senderId' : senderId,
-      'receiverId' : receiverId,
-      'message' : message,
-      'timestamp' : timestamp
+      'senderId': senderId,
+      'reciverId': reciverId,
+      'message': message,
+      'timestamp': timestamp, // Store timestamp as Timestamp
     };
+  }
+
+  factory MessageModel.fromSnap(DocumentSnapshot snapshot) {
+    return MessageModel(
+      senderId: snapshot['senderId'],
+      reciverId: snapshot['reciverId'],
+      message: snapshot['message'],
+      timestamp: snapshot['timestamp'], // Assuming it's already a Timestamp
+    );
   }
 }

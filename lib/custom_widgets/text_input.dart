@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-class TextInputField extends StatefulWidget {
+class TextInputField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscure;
   final List<String> autofillHints;
+  final Function(String)? onSubmit;
   const TextInputField({
     super.key,
+    this.onSubmit,
     required this.controller,
     required this.hintText,
     required this.obscure,
@@ -14,18 +16,14 @@ class TextInputField extends StatefulWidget {
   });
 
   @override
-  State<TextInputField> createState() => _TextInputFieldState();
-}
-
-class _TextInputFieldState extends State<TextInputField> {
-  @override
   Widget build(BuildContext context) {
     return TextField(
-      autofillHints: widget.autofillHints,
-      controller: widget.controller,
-      obscureText: widget.obscure,
+      onSubmitted: onSubmit,
+      autofillHints: autofillHints,
+      controller: controller,
+      obscureText: obscure,
       decoration: InputDecoration(
-        hintText: widget.hintText,
+        hintText: hintText,
         hintStyle: const TextStyle(fontWeight: FontWeight.w300),
         border: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.grey, width: 10),

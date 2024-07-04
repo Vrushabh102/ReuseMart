@@ -33,7 +33,12 @@ class _SellScreenState extends ConsumerState<SellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Enter item details'),
+      ),
       resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -72,7 +77,11 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                     onPressed: () {
                       checkDetails();
                     },
-                    style: loginButtonStyle(),
+                    style: loginButtonStyle().copyWith(
+                      minimumSize: MaterialStatePropertyAll(
+                        Size(width * 0.9, height * 0.06),
+                      ),
+                    ),
                     child: const Text(
                       'Next',
                       style: TextStyle(color: Colors.white),
@@ -108,7 +117,11 @@ class _SellScreenState extends ConsumerState<SellScreen> {
     _descriptionController.clear();
     _priceController.clear();
 
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const SelectImageScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SelectImageScreen(),
+      ),
+    );
   }
 }

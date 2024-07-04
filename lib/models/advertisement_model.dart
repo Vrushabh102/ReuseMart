@@ -1,18 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
 class AdvertisementModel {
   final String name;
-  final String userEmail;
   final String description;
   final List<String> photoUrl;
   final String price;
   final String timestamp;
+  final String? profilePhotoUrl;
+  final String displayName;
+  final String userUid;
+  final String itemId;
 
   const AdvertisementModel({
+    required this.displayName,
+    required this.itemId,
+    required this.userUid,
+    required this.profilePhotoUrl,
     required this.timestamp,
-    required this.userEmail,
     required this.name,
     required this.description,
     required this.photoUrl,
@@ -21,12 +28,15 @@ class AdvertisementModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'itemId' : itemId,
+      'userUid': userUid,
       'timestamp': timestamp,
-      'userEmail': userEmail,
       'description': description,
       'photoUrl': photoUrl,
       'price': price,
-      'name': name
+      'name': name,
+      'profilePhotoUrl': profilePhotoUrl,
+      'displayName': displayName
     };
   }
 
@@ -34,30 +44,38 @@ class AdvertisementModel {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
     final data = documentSnapshot.data()!;
     return AdvertisementModel(
+      itemId: data['itemId'],
+      userUid: data['userUid'],
       timestamp: data['timestamp'],
-      userEmail: data['userEmail'],
       name: data['name'],
       description: data['description'],
       photoUrl: List<String>.from(data['photoUrl']),
       price: data['price'],
+      displayName: data['displayName'],
+      profilePhotoUrl: data['profilePhotoUrl'],
     );
   }
 
   AdvertisementModel copyWith({
     String? name,
-    String? userEmail,
     String? description,
     List<String>? photoUrl,
     String? price,
+    User? user,
+    String? userUid,
     String? timestamp,
+    String? itemId,
   }) {
     return AdvertisementModel(
+      itemId: itemId ?? this.itemId,
+      userUid: userUid ?? this.userUid,
       name: name ?? this.name,
-      userEmail: userEmail ?? this.userEmail,
       description: description ?? this.description,
       photoUrl: photoUrl ?? this.photoUrl,
       price: price ?? this.price,
       timestamp: timestamp ?? this.timestamp,
+      displayName: displayName,
+      profilePhotoUrl: profilePhotoUrl,
     );
   }
 }

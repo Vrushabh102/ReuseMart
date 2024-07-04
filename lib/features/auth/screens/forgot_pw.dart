@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:seller_app/services/authentication/firebase_methods.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _controller = TextEditingController();
 
   @override
@@ -51,14 +53,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void passwordReset() async {
-    bool isValid = await APIs().forgotPass(_controller.text.trim());
-
-    // isValid -> true : email sended successfully
-    //            false : some error occured
-    isValid
-        ? ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Check email to reset password')))
-        : ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('email not valid')));
+    ref.read(authControllerProvider).forgotPass(_controller.text.trim(), context);
   }
 }

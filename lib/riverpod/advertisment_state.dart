@@ -5,16 +5,20 @@ class AdvertisementNotifier extends StateNotifier<AdvertisementModel> {
   AdvertisementNotifier()
       : super(const AdvertisementModel(
             timestamp: '',
-            userEmail: '',
+            displayName: '',
+            profilePhotoUrl: '',
+            userUid: '',
             name: '',
             description: '',
             photoUrl: [],
+            itemId: '',
             price: ''));
 
-  void setValues(
-      {required String setName,
-      required String setDescription,
-      required String setPrice}) {
+  void setValues({
+    required String setName,
+    required String setDescription,
+    required String setPrice,
+  }) {
     state = state.copyWith(
         name: setName, description: setDescription, price: setPrice);
   }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,9 @@ class ItemContainer extends StatelessWidget {
       height: height * 0.26,
       width: width * 0.4,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.grey[800],
           boxShadow: const [
             BoxShadow(
               color: Colors.grey,
@@ -45,6 +48,17 @@ class ItemContainer extends StatelessWidget {
             child: Image.network(
               imagePath,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                log('some error occured at item container $error');
+                return const Center(
+                  child: Text(
+                    'Image not found',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           Container(
@@ -96,7 +110,5 @@ class ItemContainer extends StatelessWidget {
   }
 
   // function to change like or dislike
-  changeHeart() {
-
-  }
+  changeHeart() {}
 }

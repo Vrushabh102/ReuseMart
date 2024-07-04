@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:seller_app/custom_styles/button_styles.dart';
@@ -19,6 +21,7 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   bool showImages = false;
   int mainImageIndex = 0;
   List<String>? downloadableImageUrls;
+  late String displayName;
 
   @override
   Widget build(BuildContext context) {
@@ -52,23 +55,29 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                               : DisplayImage(image: images![index]),
                         );
                       }))
-              : const Center(
-                  child: Text(
-                  'No Images Selected',
-                  style: TextStyle(color: Colors.white),
-                )),
+              : const Expanded(
+                  child: Center(
+                    child: Text(
+                      'No Images Selected',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
           Column(
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: ElevatedButton(
                   style: loginButtonStyle().copyWith(
-                      minimumSize: MaterialStatePropertyAll(
-                          Size(width * 0.9, height * 0.06))),
+                    minimumSize: MaterialStatePropertyAll(
+                      Size(width * 0.9, height * 0.06),
+                    ),
+                  ),
                   onPressed: () async {
                     images = await selectImageScreen(context);
                     if (images != null && images!.isNotEmpty) {
                       viewImages();
+                      getUserName();
                     }
                   },
                   child: (images == null || images!.isEmpty)
@@ -83,28 +92,34 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                 ),
               ),
               if (showImages)
-                  Container(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: ElevatedButton(
-                      style: loginButtonStyle().copyWith(
-                          minimumSize: MaterialStatePropertyAll(
-                              Size(width * 0.9, height * 0.06))),
-                      onPressed: () async {
-                        if (images != null && images!.isNotEmpty) {
-
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DisplayItemScreen( isPosted: false,imagesInUint8: images)));
-                        }
-                      },
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(color: Colors.white),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: ElevatedButton(
+                    style: loginButtonStyle().copyWith(
+                      minimumSize: MaterialStatePropertyAll(
+                        Size(width * 0.9, height * 0.06),
                       ),
                     ),
-              ),
+                    onPressed: () async {
+                      if (images != null && images!.isNotEmpty && displayName.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DisplayItemScreen(
+                              displayName: displayName,
+                              isPosted: false,
+                              imagesInUint8: images,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Next',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
             ],
           ),
         ],
@@ -149,28 +164,44 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
           title: const Text('Remove this Image?'),
           actions: [
             TextButton(
-                onPressed: () {
-                  // remove the image from the list at index received
-                  setState(() {
-                    images!.removeAt(index);
-                    // check if all the images are deleted
-                    if (images == null || images!.isEmpty) {
-                      showImages = false;
-                    }
-                  });
-                  Navigator.of(context).pop(context);
-                },
-                child:
-                    const Text('Yes', style: TextStyle(color: Colors.white))),
+              onPressed: () {
+                // remove the image from the list at index received
+                setState(() {
+                  images!.removeAt(index);
+                  // check if all the images are deleted
+                  if (images == null || images!.isEmpty) {
+                    showImages = false;
+                  }
+                });
+                Navigator.of(context).pop(context);
+              },
+              child: const Text(
+                'Yes',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             TextButton(
-                onPressed: () {
-                  // do noting
-                  Navigator.of(context).pop(context);
-                },
-                child: const Text('No', style: TextStyle(color: Colors.white)))
+              onPressed: () {
+                // do noting
+                Navigator.of(context).pop(context);
+              },
+              child: const Text(
+                'No',
+                style: TextStyle(color: Colors.white),
+              ),
+            )
           ],
         );
       },
     );
+  }
+
+  Future<void> getUserName() async {
+    final data = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    final fullname = data.data()!['fullname'] ?? 'Unknown';
+    displayName = fullname;
   }
 }

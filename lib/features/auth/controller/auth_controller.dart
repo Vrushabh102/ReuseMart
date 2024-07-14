@@ -2,12 +2,14 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/Providers/current_screen_provider.dart';
+import 'package:seller_app/core/Providers/is_loading_provider.dart';
 import 'package:seller_app/core/Providers/user_provider.dart';
 import 'package:seller_app/features/auth/repository/auth_repository.dart';
+import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
-final isLoadingProvider = StateProvider<bool>((ref) => false);
 // provider for auth controller
 final authControllerProvider = Provider(
   (ref) => AuthController(
@@ -48,6 +50,7 @@ class AuthController {
       // store the data user data in provider.......
       log('now what?...');
       _ref.read(isLoadingProvider.notifier).state = false;
+      _ref.read(currentScrrenIndexProvider.notifier).state = 0;
     });
   }
 
@@ -68,8 +71,7 @@ class AuthController {
     BuildContext context,
   ) async {
     _ref.read(isLoadingProvider.notifier).state = false;
-    final user =
-        await _authRepository.createUserAuth(name, email, gender, password);
+    final user = await _authRepository.createUserAuth(name, email, gender, password);
     _ref.read(isLoadingProvider.notifier).state = true;
 
     // handling error
@@ -87,9 +89,12 @@ class AuthController {
     BuildContext context,
   ) async {
     final user = await _authRepository.loginUser(email, password);
+    _ref.read(chatControllerProvider).fetchBuyingChats();
+    _ref.read(chatControllerProvider).fetchSellingChats();
     user.fold((l) {
       showSnackBar(context: context, message: l.message);
     }, (userModel) {
+      _ref.read(currentScrrenIndexProvider.notifier).state = 0;
       _ref.read(userProvider.notifier).setUserDetails(userModel);
     });
   }
@@ -105,6 +110,10 @@ class AuthController {
 
   logoutUser(BuildContext context) async {
     _ref.watch(isLoadingProvider.notifier).state = true;
+    _ref.invalidate(fetchBuyingChatsStreamProvider);
+    _ref.invalidate(fetchSellingChatsStreamProvider);
+    _ref.invalidate(chatControllerProvider);
+    _ref.invalidate(userProvider);
     final result = await _authRepository.logOutUser();
     _ref.watch(isLoadingProvider.notifier).state = false;
 

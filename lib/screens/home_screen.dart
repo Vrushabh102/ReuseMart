@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:seller_app/screens/display_screens/display_chat_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/Providers/current_screen_provider.dart';
+import 'package:seller_app/features/chat/chat_screens/display_chat_screen.dart';
 import 'package:seller_app/screens/display_screens/display_account_screen.dart';
 import 'package:seller_app/screens/display_screens/display_home_screen.dart';
 import 'package:seller_app/features/advertisement/screens/display_my_ads_screen.dart';
 import 'package:seller_app/features/advertisement/screens/display_sell_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-int currentScreenIndex = 0;
-
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   // bottom nav screens list
   final List<Widget> _screens = [
     const DisplayHomeScreen(),
@@ -31,13 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
         return AlertDialog(
           title: Text(
             'Do you want to sell your used item?',
-            style: TextStyle(
-                fontSize: 17,
-                color: Colors.grey.shade200,
-                fontWeight: FontWeight.normal),
+            style: TextStyle(fontSize: 17, color: Colors.grey.shade200, fontWeight: FontWeight.normal),
           ),
           actions: [
-
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -74,48 +70,38 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // setting the screen on this page
-      body: _screens[currentScreenIndex],
+      body: _screens[ref.watch(currentScrrenIndexProvider)],
 
       bottomNavigationBar: BottomAppBar(
+        height: 73.5,
         elevation: 0,
         notchMargin: 0,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Expanded(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomBottomNavItem(
-                    onTap: () {
-                      setState(() {
-                        currentScreenIndex = 0;
-                      });
-                    },
-                    itemIndex: 0,
-                    title: 'Home',
-                    imageProvider: const AssetImage('assets/icons/home.png'),
-                  ),
-                  const SizedBox(
-                    width: 1,
-                  ),
-                  CustomBottomNavItem(
-                    onTap: () {
-                      setState(() {
-                        currentScreenIndex = 1;
-                      });
-                    },
-                    itemIndex: 1,
-                    imageProvider: const AssetImage('assets/icons/chat.png'),
-                    title: 'Chats',
-                  ),
-                ],
-              ),
+            // const Divider(),
+            CustomBottomNavItem(
+              onTap: () {
+                ref.read(currentScrrenIndexProvider.notifier).state = 0;
+              },
+              itemIndex: 0,
+              title: 'Home',
+              imageProvider: const AssetImage('assets/icons/home.png'),
+            ),
+            const SizedBox(
+              width: 7.5,
+            ),
+            CustomBottomNavItem(
+              onTap: () {
+                ref.read(currentScrrenIndexProvider.notifier).state = 1;
+              },
+              itemIndex: 1,
+              imageProvider: const AssetImage('assets/icons/chat.png'),
+              title: 'Chats',
             ),
             // sell text
             Container(
-              margin: const EdgeInsets.only(bottom: 5.5),
+              margin: const EdgeInsets.fromLTRB(12.5, 0, 0, 5.5),
               alignment: Alignment.bottomCenter,
               width: MediaQuery.of(context).size.width * 0.19,
               child: Text(
@@ -123,33 +109,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(color: Colors.grey.shade400),
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CustomBottomNavItem(
-                    onTap: () {
-                      setState(() {
-                        currentScreenIndex = 2;
-                      });
-                    },
-                    itemIndex: 2,
-                    title: 'My ads',
-                    imageProvider: const AssetImage('assets/icons/my_add.png'),
-                  ),
-                  CustomBottomNavItem(
-                    onTap: () {
-                      setState(() {
-                        currentScreenIndex = 3;
-                      });
-                    },
-                    title: 'Account',
-                    itemIndex: 3,
-                    imageProvider: const AssetImage('assets/icons/account.png'),
-                  ),
-                ],
-              ),
+            CustomBottomNavItem(
+              onTap: () {
+                ref.read(currentScrrenIndexProvider.notifier).state = 2;
+              },
+              itemIndex: 2,
+              title: 'My ads',
+              imageProvider: const AssetImage('assets/icons/my_add.png'),
+            ),
+            CustomBottomNavItem(
+              onTap: () {
+                ref.read(currentScrrenIndexProvider.notifier).state = 3;
+              },
+              title: 'Account',
+              itemIndex: 3,
+              imageProvider: const AssetImage('assets/icons/account.png'),
             ),
           ],
         ),
@@ -181,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class CustomBottomNavItem extends StatelessWidget {
+class CustomBottomNavItem extends ConsumerWidget {
   const CustomBottomNavItem({
     super.key,
     required this.title,
@@ -195,7 +169,7 @@ class CustomBottomNavItem extends StatelessWidget {
   final VoidCallback onTap;
   final int itemIndex;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: onTap,
       radius: 30,
@@ -208,17 +182,13 @@ class CustomBottomNavItem extends StatelessWidget {
           children: [
             ImageIcon(
               imageProvider,
-              color: (currentScreenIndex == itemIndex
-                  ? primaryColor
-                  : Colors.grey),
+              color: (itemIndex == ref.read(currentScrrenIndexProvider) ? primaryColor : Colors.grey),
             ),
             Text(
               title,
               style: TextStyle(
                 fontSize: 13,
-                color: (currentScreenIndex == itemIndex)
-                    ? primaryColor
-                    : Colors.grey,
+                color: (itemIndex == ref.read(currentScrrenIndexProvider)) ? primaryColor : Colors.grey,
               ),
             ),
           ],
@@ -227,4 +197,3 @@ class CustomBottomNavItem extends StatelessWidget {
     );
   }
 }
-

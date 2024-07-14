@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/core/Providers/advertisement_provider.dart';
+import 'package:seller_app/core/Providers/user_provider.dart';
 import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/core/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/pick_image_screen.dart';
+import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
-class SellScreen extends ConsumerStatefulWidget {
-  const SellScreen({super.key});
+class EditAdvertisement extends ConsumerStatefulWidget {
+  const EditAdvertisement({required this.advertisementModel, super.key});
+  final AdvertisementModel? advertisementModel;
 
   @override
-  ConsumerState<SellScreen> createState() => _SellScreenState();
+  ConsumerState<EditAdvertisement> createState() => _EditAdvertisementState();
 }
 
-class _SellScreenState extends ConsumerState<SellScreen> {
+class _EditAdvertisementState extends ConsumerState<EditAdvertisement> {
   final _itemNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
@@ -24,6 +27,14 @@ class _SellScreenState extends ConsumerState<SellScreen> {
     _descriptionController.dispose();
     _priceController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    _itemNameController.text = widget.advertisementModel!.name;
+    _descriptionController.text = widget.advertisementModel!.description;
+    _priceController.text = widget.advertisementModel!.price;
+    super.initState();
   }
 
   @override
@@ -62,14 +73,10 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                       borderSide: BorderSide(color: Colors.grey, width: 10),
                     ),
                     enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 0.5), // Default border color
+                      borderSide: BorderSide(color: Colors.grey, width: 0.5), // Default border color
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.blue,
-                          width: 2.0), // Focused border color and width
+                      borderSide: BorderSide(color: Colors.blue, width: 2.0), // Focused border color and width
                     ),
                   ),
                   controller: _descriptionController,
@@ -112,9 +119,7 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   }
 
   void checkDetails() {
-    if (_itemNameController.text.isEmpty ||
-        _descriptionController.text.isEmpty ||
-        _priceController.text.isEmpty) {
+    if (_itemNameController.text.isEmpty || _descriptionController.text.isEmpty || _priceController.text.isEmpty) {
       showSnackBar(context: context, message: 'Enter details');
     } else {
       // all details are filled
@@ -125,6 +130,12 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   // fun to add details to the state
   void addDetailsState() {
     final provider = ref.watch(advertisementProvider.notifier);
+
+    // set the item id to be able to update the advertisement
+    ref.read(advertisementProvider.notifier).setAdvertisementId(itemId: widget.advertisementModel!.name[0] + widget.advertisementModel!.price + ref.read(userProvider).userUid);
+
+    
+
     provider.setValues(
       setName: _itemNameController.text,
       setDescription: _descriptionController.text,
@@ -138,7 +149,9 @@ class _SellScreenState extends ConsumerState<SellScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SelectImageScreen(),
+        builder: (context) => SelectImageScreen(
+          postedImages: widget.advertisementModel!.photoUrl,
+        ),
       ),
     );
   }

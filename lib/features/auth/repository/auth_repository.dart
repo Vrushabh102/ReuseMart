@@ -73,12 +73,15 @@ class AuthRepository {
       if (userCredential.additionalUserInfo!.isNewUser) {
         log('user at auth repo is new');
         userModel = UserModel(
+          likedAds: const [],
           photoUrl: userCredential.user!.photoURL,
           gender: 'Male',
           fullName: userCredential.user!.displayName,
           email: userCredential.user!.email ?? 'No email',
           userUid: userCredential.user!.uid,
         );
+        // save user data to firebase
+        await saveUserDataToFirebase(userModel.userUid, userModel);
         return right(userModel);
       } else {
         // user is old, so user must be having data on the database
@@ -117,6 +120,7 @@ class AuthRepository {
 
       // save user data to the user provider
       UserModel userModel = UserModel(
+        likedAds: const [],
         photoUrl: userCredential.user!.photoURL,
         gender: gender,
         fullName: name,
@@ -135,7 +139,7 @@ class AuthRepository {
         return left(
             Failure('The email address is already in use by another account.'));
       }
-      return left(Failure(e.message ?? 'An unknown error occurred.'));
+      return left(Failure(e.code));
     } catch (e) {
       log('Error creating new user $e');
       return left(Failure(e.toString()));
@@ -157,7 +161,7 @@ class AuthRepository {
       return right(model);
     } on FirebaseAuthException catch (e) {
       log('error logging in user $e');
-      return left(Failure(e.toString()));
+      return left(Failure(e.code));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -192,7 +196,7 @@ class AuthRepository {
       return right(signOut);
     } on FirebaseAuthException catch (e) {
       log('error logging out $e');
-      return left(Failure(e.toString()));
+      return left(Failure(e.code));
     } catch (e) {
       return left(Failure(e.toString()));
     }

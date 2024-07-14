@@ -1,14 +1,13 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
+import 'package:seller_app/core/Providers/is_loading_provider.dart';
+import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
-import 'package:seller_app/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/screens/create_account_screen.dart';
 import 'package:seller_app/features/auth/screens/forgot_pw.dart';
 import 'package:seller_app/utils/colors.dart';
-import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/core/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -99,14 +98,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 Expanded(
                                   child: TextInputField(
                                     onSubmit: (p0) {
-                                      checkLogin();
+                                      if (_emailController.text.isEmpty) {
+                                        showSnackBar(context: context, message: 'Enter email');
+                                      } else if (_passController.text.isEmpty) {
+                                        showSnackBar(context: context, message: 'Enter password');
+                                      } else {
+                                        checkLogin();
+                                      }
                                     },
                                     controller: _passController,
                                     hintText: 'Password',
                                     obscure: true,
-                                    autofillHints: const [
-                                      AutofillHints.password
-                                    ],
+                                    autofillHints: const [AutofillHints.password],
                                   ),
                                 ),
                               ],
@@ -122,18 +125,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: InkWell(
                           child: Text(
                             'Forgot Password',
-                            style: TextStyle(
-                                fontSize: height * 0.02,
-                                color: isLightTheme
-                                    ? lightClickableTextColor
-                                    : darkClickableTextColor),
+                            style: TextStyle(fontSize: height * 0.02, color: isLightTheme ? lightClickableTextColor : darkClickableTextColor),
                           ),
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgotPasswordScreen(),
+                                builder: (context) => const ForgotPasswordScreen(),
                               ),
                             );
                           },
@@ -155,11 +153,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (_emailController.text.isEmpty) {
-                            showSnackBar(
-                                context: context, message: 'Enter email');
+                            showSnackBar(context: context, message: 'Enter email');
                           } else if (_passController.text.isEmpty) {
-                            showSnackBar(
-                                context: context, message: 'Enter password');
+                            showSnackBar(context: context, message: 'Enter password');
                           } else {
                             checkLogin();
                           }
@@ -189,17 +185,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         decoration: googleButtonDecoration(),
                         height: height * 0.06,
                         width: width * 0.9,
-                        child: SignInButton(
+                        child: ElevatedButton(
+                          style: googleButtonStyle(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 22, width: 22, child: Image.asset('assets/icons/google.png')),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Sign in with Google',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ],
+                          ), // or any other Google icon you want to use
                           onPressed: () {
-                            // google sign in
                             signInWithGoogle(ref);
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          Buttons.Google,
-                          elevation: 0,
-                          text: 'Sign in with Google',
+                          }, // Change this to your desired text color
                         ),
                       ),
 
@@ -218,9 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           'Create new account',
                           style: TextStyle(
                             fontSize: 13.7,
-                            color: isLightTheme
-                                ? lightClickableTextColor
-                                : darkClickableTextColor,
+                            color: isLightTheme ? lightClickableTextColor : darkClickableTextColor,
                           ),
                         ),
                       ),
@@ -251,8 +250,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   // function to check user data and to redirect to homescreen
   void checkLogin() async {
-    await ref
-        .watch(authControllerProvider)
-        .loginUser(_emailController.text, _passController.text, context);
+    await ref.watch(authControllerProvider).loginUser(_emailController.text, _passController.text, context);
   }
 }

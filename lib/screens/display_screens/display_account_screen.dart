@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/Providers/is_loading_provider.dart';
 import 'package:seller_app/core/Providers/user_provider.dart';
 import 'package:seller_app/core/constants.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
+import 'package:seller_app/features/liked_items/screens/liiked_item_screen.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -126,6 +128,14 @@ Widget _buildAccountDetails(WidgetRef ref, BuildContext context) {
         // liked items listtile
         ListTile(
           title: const Text('Liked items'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LikedItems(),
+              ),
+            );
+          },
           leading: Container(
             height: 40,
             width: 40,

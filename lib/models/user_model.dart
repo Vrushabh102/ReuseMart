@@ -9,6 +9,7 @@ class UserModel {
   final String? fullName;
   final String userUid;
   final String? gender;
+  final List<String> likedAds;
 
   const UserModel({
     this.photoUrl,
@@ -16,6 +17,7 @@ class UserModel {
     required this.fullName,
     required this.email,
     required this.userUid,
+    required this.likedAds,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,14 +26,17 @@ class UserModel {
       'email': email,
       'userUid': userUid,
       'gender': gender,
-      'photoUrl': photoUrl
+      'photoUrl': photoUrl,
+      'likedAds': likedAds,
     };
   }
 
   factory UserModel.fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+    DocumentSnapshot<Map<String, dynamic>> documentSnapshot,
+  ) {
     final data = documentSnapshot.data()!;
     return UserModel(
+        likedAds: List<String>.from(data['likedAds']),
         fullName: data['fullname'],
         gender: data['gender'],
         photoUrl: data['photoUrl'],
@@ -45,8 +50,10 @@ class UserModel {
     String? fullName,
     String? userUid,
     String? gender,
+    List<String>? likedAds,
   }) {
     return UserModel(
+      likedAds: likedAds ?? this.likedAds,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       userUid: userUid ?? this.userUid,
@@ -57,10 +64,17 @@ class UserModel {
 }
 
 class UserNotifier extends StateNotifier<UserModel> {
-  UserNotifier()
+  final Ref ref;
+  UserNotifier(this.ref)
       : super(
           const UserModel(
-              gender: '', fullName: '', email: '', userUid: '', photoUrl: null),
+            gender: '',
+            fullName: '',
+            email: '',
+            userUid: '',
+            photoUrl: null,
+            likedAds: [],
+          ),
         );
 
   void setUserDetails(UserModel userModel) {
@@ -73,5 +87,19 @@ class UserNotifier extends StateNotifier<UserModel> {
 
   void setGender(String gender) {
     state = state.copyWith(gender: gender);
+  }
+
+  void addLikedItem(String itemId) {
+    state = state.copyWith(likedAds: [...state.likedAds, itemId]);
+  }
+
+  void removeLikedItem(String itemId) {
+    state = state.copyWith(
+        likedAds:
+            state.likedAds.where((element) => element != itemId).toList());
+  }
+
+  void updateLikedAds(List<String> newLikedAds) {
+    state = state.copyWith(likedAds: newLikedAds);
   }
 }

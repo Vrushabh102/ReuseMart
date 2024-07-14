@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyD3Kl57Ium1X7xh4rLam0CXe7N0PR1832Q',
-    appId: '1:106510018646:web:75a25e9dcae6e9c062f3f7',
+    appId: '1:106510018646:web:912f68833df5e40a62f3f7',
     messagingSenderId: '106510018646',
     projectId: 'reusemart-caf9b',
     authDomain: 'reusemart-caf9b.firebaseapp.com',
@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     projectId: 'reusemart-caf9b',
     storageBucket: 'reusemart-caf9b.appspot.com',
   );
+
 }

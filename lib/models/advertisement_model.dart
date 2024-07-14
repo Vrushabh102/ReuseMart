@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class AdvertisementModel {
@@ -28,7 +29,7 @@ class AdvertisementModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'itemId' : itemId,
+      'itemId': itemId,
       'userUid': userUid,
       'timestamp': timestamp,
       'description': description,
@@ -40,8 +41,7 @@ class AdvertisementModel {
     };
   }
 
-  factory AdvertisementModel.fromSnapShot(
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+  factory AdvertisementModel.fromSnapShot(DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
     final data = documentSnapshot.data()!;
     return AdvertisementModel(
       itemId: data['itemId'],
@@ -76,6 +76,38 @@ class AdvertisementModel {
       timestamp: timestamp ?? this.timestamp,
       displayName: displayName,
       profilePhotoUrl: profilePhotoUrl,
+    );
+  }
+}
+
+class AdvertisementNotifier extends StateNotifier<AdvertisementModel> {
+  AdvertisementNotifier() : super(const AdvertisementModel(timestamp: '', displayName: '', profilePhotoUrl: '', userUid: '', name: '', description: '', photoUrl: [], itemId: '', price: ''));
+
+  void setValues({
+    required String setName,
+    required String setDescription,
+    required String setPrice,
+  }) {
+    state = state.copyWith(name: setName, description: setDescription, price: setPrice);
+  }
+
+  void clearState() {
+    state = state.copyWith(name: '', description: '', price: '');
+  }
+
+  void setAdvertisementId({required String itemId}) {
+    state = state.copyWith(itemId: itemId);
+  }
+
+  void updateAdvertisementTextFields({
+    required String name,
+    required String description,
+    required String price,
+  }) {
+    state = state.copyWith(
+      name: name,
+      description: description,
+      price: price,
     );
   }
 }

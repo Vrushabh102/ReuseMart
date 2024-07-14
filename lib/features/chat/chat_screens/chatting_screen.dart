@@ -2,16 +2,19 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:seller_app/core/constants.dart';
-import 'package:seller_app/custom_widgets/advertisement_widget.dart';
-import 'package:seller_app/custom_widgets/chat_bubble.dart';
+import 'package:seller_app/core/custom_widgets/chat_bubble.dart';
+import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
+import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/models/message_model.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/services/chat_services.dart';
+import 'package:seller_app/utils/colors.dart';
 
-class ChattingScreen extends StatefulWidget {
+class ChattingScreen extends ConsumerStatefulWidget {
   const ChattingScreen({
     super.key,
     required this.addmodel,
@@ -22,10 +25,10 @@ class ChattingScreen extends StatefulWidget {
   final UserModel? userModel; // not null while selling
   final bool isCurrentUserSelling;
   @override
-  State<ChattingScreen> createState() => _ChattingScreenState();
+  ConsumerState<ChattingScreen> createState() => _ChattingScreenState();
 }
 
-class _ChattingScreenState extends State<ChattingScreen> {
+class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   final textController = TextEditingController();
   final auth = FirebaseAuth.instance;
   final scrollController = ScrollController();
@@ -75,10 +78,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
                       backgroundColor: Colors.white,
                       backgroundImage: (widget.userModel != null)
                           ? (widget.userModel!.gender == 'Male')
-                              ?  const AssetImage(
-                                  Constants.maleProfilePic)
-                              : const AssetImage(
-                                  Constants.femaleProfilePic)
+                              ? const AssetImage(Constants.maleProfilePic)
+                              : const AssetImage(Constants.femaleProfilePic)
                           : const AssetImage(Constants.maleProfilePic),
                     ),
                     SizedBox(width: width * 0.02),
@@ -101,6 +102,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                     MaterialPageRoute(
                       builder: (context) {
                         return DisplayItemScreen(
+                          isUpdating: false,
                           displayName: widget.addmodel.displayName,
                           isPosted: true,
                           model: widget.addmodel,
@@ -117,8 +119,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                     ),
                     borderRadius: BorderRadius.circular(40),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 4),
                   width: width * 0.85,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,29 +155,22 @@ class _ChattingScreenState extends State<ChattingScreen> {
   _buildMessageInput(double height, double width) {
     return Container(
       padding: const EdgeInsets.all(8),
-      height: height * 0.1,
-      width: width,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              focusNode: focusNode,
-              controller: textController,
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  log('message sent from chatting screen');
-                  sendMessage(value.trim());
-                  textController.clear();
-                  focusNode.requestFocus();
-                }
-              },
-              decoration: const InputDecoration(
-                hintText: 'Message',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          IconButton(
+      margin: const EdgeInsets.only(bottom: 3),
+      child: TextField(
+        maxLines: null,
+        minLines: 1,
+        focusNode: focusNode,
+        controller: textController,
+        onSubmitted: (value) {
+          if (value.isNotEmpty) {
+            log('message sent from chatting screen');
+            sendMessage(value.trim());
+            textController.clear();
+            focusNode.requestFocus();
+          }
+        },
+        decoration: InputDecoration(
+          suffixIcon: IconButton(
             onPressed: () {
               if (textController.text.isNotEmpty) {
                 log('message sent from chatting screen');
@@ -186,9 +180,28 @@ class _ChattingScreenState extends State<ChattingScreen> {
                 focusNode.requestFocus();
               }
             },
-            icon: const Icon(Icons.send),
-          )
-        ],
+            icon: const Icon(Icons.send_sharp),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          hintText: 'Message',
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(26)),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(26)),
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.4,
+            ),
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(26)),
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -204,40 +217,33 @@ class _ChattingScreenState extends State<ChattingScreen> {
       log('fetch message isSelling is false $chatId');
     }
 
-    return StreamBuilder(
-      stream: ChatServices().fetchMessagesByChatId(chatId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        if (snapshot.hasError) {
-          log('An error has occurred');
-          log(snapshot.error.toString());
-          return Center(
-            child: Text('An error has occurred: ${snapshot.error}'),
-          );
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          log("first or null${snapshot.data!.docs.firstOrNull}");
+    final buildMessagestraemProvider = ref.watch(buildMessagesStreamProvider(chatId));
+    return buildMessagestraemProvider.when(
+      data: (data) {
+        if (data.docs.isEmpty) {
           return const Center(
             child: Text('No messages found.'),
           );
         } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            scrollToBottom();
-          });
-
           return ListView(
             controller: scrollController,
-            children: snapshot.data!.docs
-                .map((document) => _buildMessageItem(document))
-                .toList(),
+            children: data.docs.map((document) => _buildMessageItem(document)).toList(),
           );
         }
+      },
+      error: (error, stackTrace) {
+        log('An error has occurred');
+        log(error.toString());
+        return Center(
+          child: Text('An error has occurred: $error'),
+        );
+      },
+      loading: () {
+        return Center(
+          child: CircularProgressIndicator(
+            color: primaryColor,
+          ),
+        );
       },
     );
   }
@@ -248,15 +254,11 @@ class _ChattingScreenState extends State<ChattingScreen> {
     bool isPrimary;
     if (widget.isCurrentUserSelling) {
       // curr user is the seller, so seller should have primary colr & right alin
-      alignment = (document['senderId'] == auth.currentUser!.uid)
-          ? Alignment.centerRight
-          : Alignment.centerLeft;
+      alignment = (document['senderId'] == auth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft;
       isPrimary = (document['senderId'] == auth.currentUser!.uid);
     } else {
       // curr user is the buyer, so buyer should have primary clor & right alin
-      alignment = (document['senderId'] == auth.currentUser!.uid)
-          ? Alignment.centerRight
-          : Alignment.centerLeft;
+      alignment = (document['senderId'] == auth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft;
       isPrimary = (document['senderId'] == auth.currentUser!.uid);
     }
     return Container(

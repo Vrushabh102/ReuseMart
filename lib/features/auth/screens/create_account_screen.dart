@@ -2,13 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
+import 'package:seller_app/core/Providers/is_loading_provider.dart';
 import 'package:seller_app/core/constants.dart';
+import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
-import 'package:seller_app/custom_widgets/text_input.dart';
-import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/core/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
@@ -95,11 +94,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.person),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(
-                                autofillHints: const [AutofillHints.name],
-                                controller: _nameController,
-                                hintText: 'Full Name',
-                                obscure: false),
+                            child: TextInputField(autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
                           ),
                         ],
                       ),
@@ -110,11 +105,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.email),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(
-                                autofillHints: const [AutofillHints.email],
-                                controller: _emailController,
-                                hintText: 'Email',
-                                obscure: false),
+                            child: TextInputField(autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
                           ),
                         ],
                       ),
@@ -125,18 +116,14 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.lock),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(
-                                autofillHints: const [AutofillHints.password],
-                                controller: _createPassController,
-                                hintText: 'Create Password',
-                                obscure: true),
+                            child: TextInputField(autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
                           ),
                         ],
                       ),
                       SizedBox(
                         height: height * 0.01,
                       ),
-            
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -144,20 +131,16 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           addRadioButton(1, 'Female'),
                         ],
                       ),
-            
+
                       SizedBox(
                         height: height * 0.035,
                       ),
-            
+
                       ElevatedButton(
                         onPressed: () {
                           // create new account button
-                          if (_nameController.text.isEmpty ||
-                              _emailController.text.isEmpty ||
-                              _createPassController.text.isEmpty ||
-                              select.isEmpty) {
-                            showSnackBar(
-                                context: context, message: 'Enter Details');
+                          if (_nameController.text.isEmpty || _emailController.text.isEmpty || _createPassController.text.isEmpty || select.isEmpty) {
+                            showSnackBar(context: context, message: 'Enter Details');
                           } else {
                             createAccount(
                               _nameController.text,
@@ -167,46 +150,43 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                             );
                           }
                         },
-                        style: loginButtonStyle().copyWith(
-                            minimumSize: MaterialStatePropertyAll(
-                                Size(width * 0.9, height * 0.06))),
+                        style: loginButtonStyle().copyWith(minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06))),
                         child: const Text(
                           'Create Account',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-            
+
                       SizedBox(height: height * 0.022),
                       const Center(child: Text('OR')),
                       SizedBox(height: height * 0.022),
-            
+
+                      // google sing in button
                       Container(
                         decoration: googleButtonDecoration(),
                         height: height * 0.06,
                         width: width * 0.9,
-                        child: SignInButton(
+                        child: ElevatedButton(
+                          style: googleButtonStyle(),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.circle),
+                              SizedBox(width: 8),
+                              Text('Sign in with Google'),
+                            ],
+                          ), // or any other Google icon you want to use
                           onPressed: () {
-                            // google sign in
                             signInWithGoogle(ref);
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          Buttons.Google,
-                          elevation: 0,
-                          text: 'Sign in with Google',
+                          }, // Change this to your desired text color
                         ),
                       ),
-            
+
                       SizedBox(height: height * 0.01),
-            
+
                       InkWell(
                         onTap: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()),
-                              (route) => false);
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
                         },
                         child: const Center(
                           child: Text(
@@ -223,11 +203,13 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
               ],
             ),
           ),
-          (isLoading) ? Center(
-              child: CircularProgressIndicator(
-                color: primaryColor,
-              ),
-            ) : Container(),
+          (isLoading)
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: primaryColor,
+                  ),
+                )
+              : Container(),
         ],
       ),
     );
@@ -235,12 +217,12 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
 
   // function to check user data and to redirect to homescreen
   // create account screen
-  void createAccount(
-      String name, String email, String password, String gender) async {
-    await ref
-        .read(authControllerProvider)
-        .createAccount(name, email, password, gender, context);
+  void createAccount(String name, String email, String password, String gender) async {
+    await ref.read(authControllerProvider).createAccount(name, email, password, gender, context);
+    pop();
+  }
 
+  pop() {
     Navigator.pop(context);
   }
 

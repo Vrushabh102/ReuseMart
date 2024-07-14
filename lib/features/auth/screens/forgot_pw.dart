@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
-import 'package:seller_app/custom_widgets/text_input.dart';
-import 'package:seller_app/custom_styles/button_styles.dart';
+import 'package:seller_app/core/custom_styles/button_styles.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});

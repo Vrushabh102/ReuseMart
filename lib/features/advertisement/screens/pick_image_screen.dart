@@ -1,30 +1,37 @@
 import 'dart:typed_data';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seller_app/custom_styles/button_styles.dart';
-import 'package:seller_app/custom_widgets/advertisement_widget.dart';
-import 'package:seller_app/custom_widgets/display_image.dart';
+import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/core/custom_widgets/display_image.dart';
+import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
-class SelectImageScreen extends StatefulWidget {
-  const SelectImageScreen({super.key});
+class SelectImageScreen extends ConsumerStatefulWidget {
+  const SelectImageScreen({this.postedImages, super.key});
+  final List<String>? postedImages;
 
   @override
-  State<SelectImageScreen> createState() => _SelectImageScreenState();
+  ConsumerState<SelectImageScreen> createState() => _SelectImageScreenState();
 }
 
-class _SelectImageScreenState extends State<SelectImageScreen> {
-  List<Uint8List>? images = [];
+class _SelectImageScreenState extends ConsumerState<SelectImageScreen> {
   bool showImages = false;
   int mainImageIndex = 0;
-  List<String>? downloadableImageUrls;
-  late String displayName;
+  List<Uint8List>? uint8images = [];
+  List<String>? networkImages = [];
+
+  @override
+  void initState() {
+    networkImages = widget.postedImages;
+    showImages = (networkImages != null && networkImages!.isNotEmpty) || (uint8images != null && uint8images!.isNotEmpty);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final displayName = ref.watch(userProvider).fullName ?? 'No name';
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
@@ -38,23 +45,36 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
           (showImages)
               ? Expanded(
                   child: GridView.builder(
-                      itemCount: images!.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2),
-                      itemBuilder: (context, index) {
+                    itemCount: (uint8images?.length ?? 0) + (networkImages?.length ?? 0),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      if (index < (networkImages?.length ?? 0)) {
+                        // Display network images
                         return InkWell(
-                          onLongPress: () => removeImage(index),
+                          onLongPress: () => removeImage(index, true),
                           onTap: () {
                             setState(() {
                               mainImageIndex = index;
                             });
                           },
-                          child: (index == mainImageIndex)
-                              ? CurrentDiaplayImage(image: images![index])
-                              : DisplayImage(image: images![index]),
+                          child: (index == mainImageIndex) ? CurrentDisplayImage(imageUrl: networkImages![index]) : DisplayImage(imageUrl: networkImages![index]),
                         );
-                      }))
+                      } else {
+                        // Display new images
+                        final newIndex = index - (networkImages?.length ?? 0);
+                        return InkWell(
+                          onLongPress: () => removeImage(newIndex, false),
+                          onTap: () {
+                            setState(() {
+                              mainImageIndex = index;
+                            });
+                          },
+                          child: (index == mainImageIndex) ? CurrentDisplayImage(image: uint8images![newIndex]) : DisplayImage(image: uint8images![newIndex]),
+                        );
+                      }
+                    },
+                  ),
+                )
               : const Expanded(
                   child: Center(
                     child: Text(
@@ -74,13 +94,12 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                     ),
                   ),
                   onPressed: () async {
-                    images = await selectImageScreen(context);
-                    if (images != null && images!.isNotEmpty) {
+                    await selectImageScreen(context);
+                    if (uint8images != null && uint8images!.isNotEmpty) {
                       viewImages();
-                      getUserName();
                     }
                   },
-                  child: (images == null || images!.isEmpty)
+                  child: ((uint8images == null || uint8images!.isEmpty) && (networkImages == null || networkImages!.isEmpty))
                       ? const Text(
                           'Select An Image',
                           style: TextStyle(color: Colors.white),
@@ -101,14 +120,16 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      if (images != null && images!.isNotEmpty && displayName.isNotEmpty) {
+                      if ((uint8images != null && uint8images!.isNotEmpty) || (networkImages != null && networkImages!.isNotEmpty)) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => DisplayItemScreen(
+                              isUpdating: (widget.postedImages != null),
                               displayName: displayName,
                               isPosted: false,
-                              imagesInUint8: images,
+                              imagesInUint8: uint8images,
+                              networkImages: networkImages,
                             ),
                           ),
                         );
@@ -130,20 +151,26 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   // fun to pick images from gallery
   selectImageScreen(BuildContext context) async {
     final ImagePicker imagePicker = ImagePicker();
-    List<XFile>? imagesXFile = await imagePicker.pickMultiImage();
-    if (images != null) {
-      // clearing global & local images list
-      this.images!.clear();
-      // adding images to the list
-      List<Uint8List> images = [];
+    List<XFile>? imagesXFile = await imagePicker.pickMultiImage(
+      imageQuality: 68,
+    );
+    if (imagesXFile.isNotEmpty) {
       for (var img in imagesXFile) {
         final currImg = await img.readAsBytes();
-        images.add(currImg);
+        if (!uint8images!.contains(currImg)) {
+          uint8images!.add(currImg);
+        }
       }
-      return images;
+      setState(() {
+        showImages = true;
+      });
+    } else {
+      showSnackbar('No Image Selected');
     }
-    // no image is selected
-    showSnackBar(context: context, message: 'No Image Selected');
+  }
+
+  showSnackbar(String message) {
+    showSnackBar(context: context, message: message);
   }
 
   // fun to view images to the screen
@@ -154,7 +181,7 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   }
 
   // fun to remove image when user longpress any image
-  void removeImage(int index) {
+  void removeImage(int index, bool isNetworkImage) {
     showDialog(
       context: context,
       builder: (context) {
@@ -165,15 +192,17 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                // remove the image from the list at index received
                 setState(() {
-                  images!.removeAt(index);
-                  // check if all the images are deleted
-                  if (images == null || images!.isEmpty) {
+                  if (isNetworkImage) {
+                    networkImages!.removeAt(index);
+                  } else {
+                    uint8images!.removeAt(index);
+                  }
+                  if ((networkImages == null || networkImages!.isEmpty) && (uint8images == null || uint8images!.isEmpty)) {
                     showImages = false;
                   }
                 });
-                Navigator.of(context).pop(context);
+                Navigator.of(context).pop();
               },
               child: const Text(
                 'Yes',
@@ -182,26 +211,16 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
             ),
             TextButton(
               onPressed: () {
-                // do noting
-                Navigator.of(context).pop(context);
+                Navigator.of(context).pop();
               },
               child: const Text(
                 'No',
                 style: TextStyle(color: Colors.white),
               ),
-            )
+            ),
           ],
         );
       },
     );
-  }
-
-  Future<void> getUserName() async {
-    final data = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    final fullname = data.data()!['fullname'] ?? 'Unknown';
-    displayName = fullname;
   }
 }

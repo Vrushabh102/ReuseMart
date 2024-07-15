@@ -69,14 +69,13 @@ class _BuyingChatsState extends ConsumerState<BuyingChats> {
           if (data.docs.isEmpty) {
             return const Text('No Chats,Explore Products and Start Buying');
           } else {
-            final tileModels =
-                data.docs.map((e) => ChatRoomMessageModel.fromMap(e)).toList();
+            final tileModels = data.docs.map((e) => ChatRoomMessageModel.fromMap(e)).toList();
             return FutureBuilder(
               future: fetchTiles(tileModels),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(
-                    color: Colors.brown,
+                  return  CircularProgressIndicator(
+                    color: primaryColor,
                   );
                 }
                 if (!snapshot.hasData) {
@@ -88,8 +87,22 @@ class _BuyingChatsState extends ConsumerState<BuyingChats> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     return ListTile(
+                      isThreeLine: true,
                       title: Text(advertisementModels![index].name),
-                      subtitle: Text(advertisementModels[index].displayName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            advertisementModels[index].displayName,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            tileModels[index].lastMessage,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                       leading: chatLeadingImage(
                         context,
                         advertisementModels[index].photoUrl[0],
@@ -129,13 +142,10 @@ class _BuyingChatsState extends ConsumerState<BuyingChats> {
     );
   }
 
-  Future<List<AdvertisementModel>> fetchTiles(
-      List<ChatRoomMessageModel> models) async {
+  Future<List<AdvertisementModel>> fetchTiles(List<ChatRoomMessageModel> models) async {
     List<AdvertisementModel> addModels = [];
     for (var element in models) {
-      final advertisementModel = await ref
-          .watch(chatControllerProvider)
-          .getAdvertisementById(element.itemId);
+      final advertisementModel = await ref.watch(chatControllerProvider).getAdvertisementById(element.itemId);
 
       addModels.add(advertisementModel);
     }
@@ -197,14 +207,15 @@ class _SellingChatsState extends ConsumerState<SellingChats> {
       body: Center(
         child: ref.watch(fetchSellingChatsStreamProvider).when(
           data: (data) {
-            final List<ChatRoomMessageModel> chatRoomMessageModelList =
-                data.docs.map((e) => ChatRoomMessageModel.fromMap(e)).toList();
+            final List<ChatRoomMessageModel> chatRoomMessageModelList = data.docs.map((e) => ChatRoomMessageModel.fromMap(e)).toList();
             return FutureBuilder(
               future: fetchTiles(chatRoomMessageModelList),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                    ),
                   );
                 }
                 if (snapshot.data?.length == null || snapshot.data!.isEmpty) {
@@ -217,15 +228,27 @@ class _SellingChatsState extends ConsumerState<SellingChats> {
                     'some error in future buider${snapshot.error}',
                   );
                 } else {
-                  final List<AdvertisementModel> advertisementModels =
-                      snapshot.data as List<AdvertisementModel>;
+                  final List<AdvertisementModel> advertisementModels = snapshot.data as List<AdvertisementModel>;
                   return ListView.builder(
                     itemCount: advertisementModels.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        isThreeLine: true,
                         title: Text(advertisementModels[index].name),
-                        subtitle:
-                            Text(buyerNames[index].fullName ?? 'some user'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              advertisementModels[index].displayName,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              chatRoomMessageModelList[index].lastMessage,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                         leading: chatLeadingImage(
                           context,
                           advertisementModels[index].photoUrl[0],
@@ -266,19 +289,16 @@ class _SellingChatsState extends ConsumerState<SellingChats> {
     );
   }
 
-  Future<List<AdvertisementModel>> fetchTiles(
-      List<ChatRoomMessageModel> models) async {
+  Future<List<AdvertisementModel>> fetchTiles(List<ChatRoomMessageModel> models) async {
     List<AdvertisementModel> addModels = [];
     final chatController = ref.watch(chatControllerProvider);
     for (var element in models) {
       log(element.itemId);
-      AdvertisementModel advertisementModel =
-          await chatController.getAdvertisementById(element.itemId);
+      AdvertisementModel advertisementModel = await chatController.getAdvertisementById(element.itemId);
       addModels.add(advertisementModel);
 
       // to get the username of the buyer to display in chats
-      final userdocument =
-          await chatController.fetchUserDetailsWithUid(element.buyerId);
+      final userdocument = await chatController.fetchUserDetailsWithUid(element.buyerId);
       log(userdocument.email);
       buyerNames.add(userdocument);
     }

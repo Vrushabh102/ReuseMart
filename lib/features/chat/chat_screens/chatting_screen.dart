@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:seller_app/core/Providers/firebase_providers.dart';
 import 'package:seller_app/core/constants.dart';
 import 'package:seller_app/core/custom_widgets/chat_bubble.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
@@ -30,7 +30,7 @@ class ChattingScreen extends ConsumerStatefulWidget {
 
 class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   final textController = TextEditingController();
-  final auth = FirebaseAuth.instance;
+
   final scrollController = ScrollController();
 
   @override
@@ -155,58 +155,78 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   _buildMessageInput(double height, double width) {
     return Container(
       padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.only(bottom: 3),
-      child: TextField(
-        maxLines: null,
-        minLines: 1,
-        focusNode: focusNode,
-        controller: textController,
-        onSubmitted: (value) {
-          if (value.isNotEmpty) {
-            log('message sent from chatting screen');
-            sendMessage(value.trim());
-            textController.clear();
-            focusNode.requestFocus();
-          }
-        },
-        decoration: InputDecoration(
-          suffixIcon: IconButton(
-            onPressed: () {
-              if (textController.text.isNotEmpty) {
-                log('message sent from chatting screen');
-                sendMessage(textController.text.trim());
-                textController.clear();
-                scrollToBottom();
-                focusNode.requestFocus();
-              }
-            },
-            icon: const Icon(Icons.send_sharp),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          hintText: 'Message',
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(26)),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(26)),
-            borderSide: BorderSide(
-              color: Colors.grey,
-              width: 1.4,
+      height: height * 0.09,
+      width: width,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              maxLines: null,
+              minLines: 1,
+              focusNode: focusNode,
+              controller: textController,
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  log('message sent from chatting screen');
+                  sendMessage(value.trim());
+                  textController.clear();
+                  focusNode.requestFocus();
+                }
+              },
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                hintText: 'Message',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(26)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(26)),
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                    width: 1.4,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(26)),
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+              ),
             ),
           ),
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(26)),
-            borderSide: BorderSide(
+          Container(
+            height: height * 0.09,
+            margin: const EdgeInsets.only(left: 3),
+            width: width * 0.14,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
               color: Colors.grey,
-              width: 1,
             ),
-          ),
-        ),
+            child: IconButton(
+              onPressed: () {
+                if (textController.text.isNotEmpty) {
+                  log('message sent from chatting screen');
+                  sendMessage(textController.text.trim());
+                  textController.clear();
+                  scrollToBottom();
+                  focusNode.requestFocus();
+                }
+              },
+              icon: const Icon(
+                Icons.send_sharp,
+                color: Colors.white,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
 
   _buildMessageList() {
+    final auth = ref.watch(firebaseAuthProvider);
     // constructing chat id with (itemId+buyerId) for buying
     String chatId;
     if (widget.isCurrentUserSelling) {
@@ -225,6 +245,9 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             child: Text('No messages found.'),
           );
         } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            scrollToBottom();
+          });
           return ListView(
             controller: scrollController,
             children: data.docs.map((document) => _buildMessageItem(document)).toList(),
@@ -249,6 +272,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   }
 
   Widget _buildMessageItem(DocumentSnapshot document) {
+    final auth = ref.watch(firebaseAuthProvider);
     MessageModel model = MessageModel.fromSnap(document);
     Alignment alignment;
     bool isPrimary;
@@ -272,6 +296,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   }
 
   sendMessage(String message) {
+    final auth = ref.watch(firebaseAuthProvider);
     String chatId;
     if (widget.isCurrentUserSelling) {
       // current user is the seller: addmodel is of current user, 2nd one is buyer from userModel

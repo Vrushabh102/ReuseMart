@@ -80,6 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 SizedBox(width: width * 0.03),
                                 Expanded(
                                   child: TextInputField(
+                                    inputType: TextInputType.emailAddress,
                                     controller: _emailController,
                                     hintText: 'Email',
                                     obscure: false,
@@ -97,6 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 SizedBox(width: width * 0.03),
                                 Expanded(
                                   child: TextInputField(
+                                    inputType: TextInputType.name,
                                     onSubmit: (p0) {
                                       if (_emailController.text.isEmpty) {
                                         showSnackBar(context: context, message: 'Enter email');
@@ -125,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: InkWell(
                           child: Text(
                             'Forgot Password',
-                            style: TextStyle(fontSize: height * 0.02, color: isLightTheme ? lightClickableTextColor : darkClickableTextColor),
+                            style: TextStyle(fontSize: height * 0.018, color: isLightTheme ? lightClickableTextColor : darkClickableTextColor),
                           ),
                           onTap: () {
                             Navigator.push(

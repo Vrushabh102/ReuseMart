@@ -57,6 +57,7 @@ class _EditAdvertisementState extends ConsumerState<EditAdvertisement> {
                   height: 20,
                 ),
                 TextInputField(
+                  inputType: TextInputType.name,
                   controller: _itemNameController,
                   hintText: 'Name of Item',
                   obscure: false,
@@ -87,6 +88,7 @@ class _EditAdvertisementState extends ConsumerState<EditAdvertisement> {
                 ),
                 const SizedBox(height: 20),
                 TextInputField(
+                  inputType: const TextInputType.numberWithOptions(decimal: false, signed: false),
                   controller: _priceController,
                   hintText: 'Enter price',
                   obscure: false,

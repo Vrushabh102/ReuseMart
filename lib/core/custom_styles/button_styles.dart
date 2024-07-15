@@ -18,8 +18,10 @@ BoxDecoration googleButtonDecoration() {
 
 ButtonStyle googleButtonStyle() {
   return const ButtonStyle(
-    backgroundColor: MaterialStatePropertyAll(
-      Colors.white,
-    ),
-  );
+      backgroundColor: MaterialStatePropertyAll(
+        Colors.white,
+      ),
+      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+      )));
 }

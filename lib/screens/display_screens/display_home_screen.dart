@@ -35,6 +35,8 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisExtent: height * 0.27,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
                 ),
                 itemCount: feedAdvertisement.length,
                 itemBuilder: (context, index) {

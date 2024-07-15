@@ -94,7 +94,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.person),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
+                            child: TextInputField(inputType: TextInputType.name ,autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
                           ),
                         ],
                       ),
@@ -105,7 +105,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.email),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
+                            child: TextInputField(inputType: TextInputType.emailAddress ,autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
                           ),
                         ],
                       ),
@@ -116,7 +116,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.lock),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
+                            child: TextInputField( inputType: TextInputType.name, autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
                           ),
                         ],
                       ),

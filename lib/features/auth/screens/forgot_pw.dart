@@ -33,6 +33,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           child: Column(
             children: [
               TextInputField(
+                inputType: TextInputType.emailAddress,
                   autofillHints: const [AutofillHints.email],
                   controller: _controller,
                   hintText: 'Enter email associated with your account',

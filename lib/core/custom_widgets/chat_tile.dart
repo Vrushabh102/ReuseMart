@@ -5,8 +5,8 @@ Container chatLeadingImage(BuildContext context, String itemImageUrl) {
   final width = MediaQuery.of(context).size.width;
   return Container(
     color: Colors.grey[700],
-    height: height * 0.15,
-    width: width * 0.15,
+    height: height * 0.1,
+    width: width * 0.2,
     child: Image.network(
       itemImageUrl,
       errorBuilder: (context, error, stackTrace) {

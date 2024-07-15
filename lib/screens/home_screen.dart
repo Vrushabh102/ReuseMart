@@ -66,7 +66,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ReuseMart'),
+        title: const Text('Reusemart'),
       ),
 
       // setting the screen on this page
@@ -101,12 +101,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             // sell text
             Container(
-              margin: const EdgeInsets.fromLTRB(12.5, 0, 0, 5.5),
+              margin: const EdgeInsets.fromLTRB(12.5, 0, 0, 3),
               alignment: Alignment.bottomCenter,
               width: MediaQuery.of(context).size.width * 0.19,
               child: Text(
                 'Sell',
-                style: TextStyle(color: Colors.grey.shade400),
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.grey[800] : Colors.grey,
+                ),
               ),
             ),
             CustomBottomNavItem(
@@ -170,6 +172,7 @@ class CustomBottomNavItem extends ConsumerWidget {
   final int itemIndex;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isLightTheme = Theme.of(context).brightness == Brightness.light;
     return InkWell(
       onTap: onTap,
       radius: 30,
@@ -182,13 +185,23 @@ class CustomBottomNavItem extends ConsumerWidget {
           children: [
             ImageIcon(
               imageProvider,
-              color: (itemIndex == ref.read(currentScrrenIndexProvider) ? primaryColor : Colors.grey),
+              color: (itemIndex == ref.read(currentScrrenIndexProvider)
+                  ? isLightTheme
+                      ? lightprimaryColor
+                      : primaryColor
+                  : isLightTheme
+                      ? Colors.grey[800]
+                      : Colors.grey),
             ),
             Text(
               title,
               style: TextStyle(
                 fontSize: 13,
-                color: (itemIndex == ref.read(currentScrrenIndexProvider)) ? primaryColor : Colors.grey,
+                color: (itemIndex == ref.read(currentScrrenIndexProvider))
+                    ? primaryColor
+                    : isLightTheme
+                        ? Colors.grey[800]
+                        : Colors.grey,
               ),
             ),
           ],

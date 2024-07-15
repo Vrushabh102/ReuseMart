@@ -190,113 +190,133 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
 
               // item details container
               Expanded(
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(30, 50, 20, 0),
-                    // height: height * 0.57,
-                    width: width * 0.96,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 0.5,
-                          blurRadius: 0.5,
-                          offset: const Offset(0, -1),
-                        ),
-                      ],
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // item name and price
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.isPosted ? widget.model!.name : advertisementState.name,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  widget.isPosted ? '₹ ${widget.model!.price}' : advertisementState.price,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            (widget.isPosted && ref.watch(userProvider).userUid != widget.model!.userUid)
-                                ? SizedBox(
-                                    child: IconButton(
-                                      onPressed: () {
-                                        changeHeart(ref);
-                                      },
-                                      icon: (ref.watch(userProvider).likedAds.contains(widget.model?.itemId))
-                                          ? const Icon(
-                                              size: 28,
-                                              Icons.favorite,
-                                              color: Colors.red,
-                                            )
-                                          : const Icon(
-                                              size: 28,
-                                              Icons.favorite_border,
-                                              color: Colors.grey,
-                                            ),
-                                    ),
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                        SizedBox(height: height * 0.05),
-                        const Text(
-                          'Description',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        SizedBox(height: height * 0.018),
-                        Text(
-                          widget.isPosted ? widget.model!.description : advertisementState.description,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        SizedBox(height: height * 0.05),
-
-                        // user details who posted
-                        const Text(
-                          'Posted by',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        ListTile(
-                          style: ListTileStyle.list,
-                          titleAlignment: ListTileTitleAlignment.center,
-                          title: Text(widget.displayName),
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            backgroundImage: (widget.isPosted)
-                                ?
-                                // add is posted, so model is not null
-                                (widget.model?.photoUrl != null)
-                                    ? NetworkImage(widget.model!.profilePhotoUrl.toString()) as ImageProvider
-                                    : const AssetImage(Constants.maleProfilePic)
-                                // add is not posted means it is in sell item page or my ads
-                                : (currentUserProvider.photoUrl != null)
-                                    ? NetworkImage(currentUserProvider.photoUrl.toString()) as ImageProvider
-                                    : const AssetImage(
-                                        Constants.maleProfilePic,
-                                      ),
-                            onBackgroundImageError: (exception, stackTrace) {
-                              log('image exception $exception');
-                            },
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(30, 50, 20, 0),
+                      // height: height * 0.57,
+                      width: width * 0.96,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.light ? const Color.fromARGB(247, 247, 247, 255) : Colors.black,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 0.5,
+                            blurRadius: 0.5,
+                            offset: Theme.of(context).brightness == Brightness.dark ? const Offset(0, -1) : const Offset(0, 0),
                           ),
+                        ],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(50),
+                          topRight: Radius.circular(50),
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // item name and price
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.isPosted ? widget.model!.name : advertisementState.name,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    widget.isPosted ? '₹ ${widget.model!.price}' : advertisementState.price,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              (widget.isPosted && ref.watch(userProvider).userUid != widget.model!.userUid)
+                                  ? SizedBox(
+                                      child: IconButton(
+                                        onPressed: () {
+                                          changeHeart(ref);
+                                        },
+                                        icon: (ref.watch(userProvider).likedAds.contains(widget.model?.itemId))
+                                            ? const Icon(
+                                                size: 28,
+                                                Icons.favorite,
+                                                color: Colors.red,
+                                              )
+                                            : const Icon(
+                                                size: 28,
+                                                Icons.favorite_border,
+                                                color: Colors.grey,
+                                              ),
+                                      ),
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.05),
+                          const Text(
+                            'Description',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          SizedBox(height: height * 0.018),
+                          Text(
+                            widget.isPosted ? widget.model!.description : advertisementState.description,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(height: height * 0.05),
+
+                          // user details who posted
+                          const Text(
+                            'Posted by',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          ListTile(
+                            style: ListTileStyle.list,
+                            titleAlignment: ListTileTitleAlignment.center,
+                            title: Text(widget.displayName),
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              backgroundImage: (widget.isPosted)
+                                  ?
+                                  // add is posted, so model is not null
+                                  (widget.model?.photoUrl != null)
+                                      ? NetworkImage(widget.model!.profilePhotoUrl.toString()) as ImageProvider
+                                      : const AssetImage(Constants.maleProfilePic)
+                                  // add is not posted means it is in sell item page or my ads
+                                  : (currentUserProvider.photoUrl != null)
+                                      ? NetworkImage(currentUserProvider.photoUrl.toString()) as ImageProvider
+                                      : const AssetImage(
+                                          Constants.maleProfilePic,
+                                        ),
+                              onBackgroundImageError: (exception, stackTrace) {
+                                log('image exception $exception');
+                              },
+                            ),
+                          ),
+
+                          (widget.isPosted)
+                              ? Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Posted on: ${widget.model?.timestamp}',
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
+                                  ],
+                                )
+                              : Container(),
+                          const SizedBox(
+                            height: 100,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

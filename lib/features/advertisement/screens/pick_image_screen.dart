@@ -86,12 +86,10 @@ class _SelectImageScreenState extends ConsumerState<SelectImageScreen> {
           Column(
             children: [
               Container(
-                padding: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: ElevatedButton(
                   style: loginButtonStyle().copyWith(
-                    minimumSize: MaterialStatePropertyAll(
-                      Size(width * 0.9, height * 0.06),
-                    ),
+                    minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06)),
                   ),
                   onPressed: () async {
                     await selectImageScreen(context);
@@ -115,9 +113,7 @@ class _SelectImageScreenState extends ConsumerState<SelectImageScreen> {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: ElevatedButton(
                     style: loginButtonStyle().copyWith(
-                      minimumSize: MaterialStatePropertyAll(
-                        Size(width * 0.9, height * 0.06),
-                      ),
+                      minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06)),
                     ),
                     onPressed: () async {
                       if ((uint8images != null && uint8images!.isNotEmpty) || (networkImages != null && networkImages!.isNotEmpty)) {

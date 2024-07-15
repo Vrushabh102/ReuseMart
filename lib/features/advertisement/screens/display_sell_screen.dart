@@ -4,6 +4,7 @@ import 'package:seller_app/core/Providers/advertisement_provider.dart';
 import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/core/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/pick_image_screen.dart';
+import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 class SellScreen extends ConsumerStatefulWidget {
@@ -46,6 +47,7 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                   height: 20,
                 ),
                 TextInputField(
+                  inputType: TextInputType.name,
                   controller: _itemNameController,
                   hintText: 'Name of Item',
                   obscure: false,
@@ -55,21 +57,17 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                   height: 20,
                 ),
                 TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Type description of item',
-                    hintStyle: TextStyle(fontWeight: FontWeight.w300),
-                    border: UnderlineInputBorder(
+                    hintStyle: const TextStyle(fontWeight: FontWeight.w300),
+                    border: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey, width: 10),
                     ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 0.5), // Default border color
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey, width: 0.5), // Default border color
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.blue,
-                          width: 2.0), // Focused border color and width
+                      borderSide: BorderSide(color: primaryColor, width: 2.0), // Focused border color and width
                     ),
                   ),
                   controller: _descriptionController,
@@ -80,6 +78,7 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextInputField(
+                  inputType: const TextInputType.numberWithOptions(decimal: false, signed: false),
                   controller: _priceController,
                   hintText: 'Enter price',
                   obscure: false,
@@ -89,18 +88,21 @@ class _SellScreenState extends ConsumerState<SellScreen> {
             ),
             Column(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    checkDetails();
-                  },
-                  style: loginButtonStyle().copyWith(
-                    minimumSize: MaterialStatePropertyAll(
-                      Size(width * 0.9, height * 0.06),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      checkDetails();
+                    },
+                    style: loginButtonStyle().copyWith(
+                      minimumSize: MaterialStatePropertyAll(
+                        Size(width * 0.9, height * 0.06),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Next',
-                    style: TextStyle(color: Colors.white),
+                    child: const Text(
+                      'Next',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -112,10 +114,10 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   }
 
   void checkDetails() {
-    if (_itemNameController.text.isEmpty ||
-        _descriptionController.text.isEmpty ||
-        _priceController.text.isEmpty) {
+    if (_itemNameController.text.isEmpty || _descriptionController.text.isEmpty || _priceController.text.isEmpty) {
       showSnackBar(context: context, message: 'Enter details');
+    } else if (int.parse(_priceController.text.trim()) < 100) {
+      showSnackBar(context: context, message: 'Price should be atleast Rs.100');
     } else {
       // all details are filled
       addDetailsState();
@@ -126,9 +128,9 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   void addDetailsState() {
     final provider = ref.watch(advertisementProvider.notifier);
     provider.setValues(
-      setName: _itemNameController.text,
-      setDescription: _descriptionController.text,
-      setPrice: _priceController.text,
+      setName: _itemNameController.text.trim(),
+      setDescription: _descriptionController.text.trim(),
+      setPrice: _priceController.text.trim(),
     );
 
     // _itemNameController.clear();

@@ -28,19 +28,21 @@ class LikedItems extends ConsumerWidget {
               style: TextStyle(fontSize: 18),
             ));
           } else {
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisExtent: height * 0.27,
-              ),
-              itemCount: likedItems.length,
-              itemBuilder: (context, index) {
-                AdvertisementModel advertisementModel = likedItems[index];
-                // dont show current user ads on homepage
-                if (advertisementModel.userUid != ref.read(userProvider).userUid) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisExtent: height * 0.27,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                ),
+                itemCount: likedItems.length,
+                itemBuilder: (context, index) {
+                  AdvertisementModel advertisementModel = likedItems[index];
+                  // dont show current user ads on homepage
+                  if (advertisementModel.userUid != ref.read(userProvider).userUid) {
+                    return InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -64,13 +66,13 @@ class LikedItems extends ConsumerWidget {
                         imagePath: advertisementModel.photoUrl[0],
                         network: true,
                       ),
-                    ),
-                  );
-                } else {
-                  log('No ads everyting is null');
-                  return null;
-                }
-              },
+                    );
+                  } else {
+                    log('No ads everyting is null');
+                    return null;
+                  }
+                },
+              ),
             );
           }
         },

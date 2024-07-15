@@ -29,33 +29,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).brightness == Brightness.light
+              ? Colors.white // Light theme background color
+              : Colors.grey[900], // Dark theme background color
           title: Text(
             'Do you want to sell your used item?',
-            style: TextStyle(fontSize: 17, color: Colors.grey.shade200, fontWeight: FontWeight.normal),
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).brightness == Brightness.light ? Colors.grey[800] : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           actions: [
             TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SellScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Yes',
-                  style: TextStyle(color: Colors.grey.shade200),
-                )),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SellScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                'Yes',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: primaryColor, // Use theme accent color
+                ),
+              ),
+            ),
             TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'No',
-                  style: TextStyle(color: Colors.grey.shade200),
-                ))
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'No',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[300], // Use theme error color
+                ),
+              ),
+            ),
           ],
         );
       },

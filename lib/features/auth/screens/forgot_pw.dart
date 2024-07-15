@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/core/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() =>
-      _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -33,18 +33,23 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           child: Column(
             children: [
               TextInputField(
-                inputType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  controller: _controller,
-                  hintText: 'Enter email associated with your account',
-                  obscure: false),
+                  inputType: TextInputType.emailAddress, autofillHints: const [AutofillHints.email], controller: _controller, hintText: 'Enter email associated with your account', obscure: false),
               const SizedBox(
                 height: 10,
               ),
               ElevatedButton(
-                onPressed: () => passwordReset(),
+                onPressed: () {
+                  if (_controller.text.isEmpty) {
+                    showSnackBar(context: context, message: 'enter your mail');
+                  } else {
+                    passwordReset();
+                  }
+                },
                 style: loginButtonStyle(),
-                child: const Text('Send mail'),
+                child: const Text(
+                  'Send mail',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

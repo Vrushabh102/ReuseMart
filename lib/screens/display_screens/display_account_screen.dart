@@ -6,6 +6,7 @@ import 'package:seller_app/core/constants.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/features/liked_items/screens/liiked_item_screen.dart';
 import 'package:seller_app/utils/colors.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -37,38 +38,10 @@ class AccountScreen extends ConsumerWidget {
 }
 
 void logout(BuildContext context, WidgetRef ref) {
-  showDialog(
-    context: context,
-    builder: (dialogContext) {
-      return AlertDialog(
-        elevation: 2,
-        actionsAlignment: MainAxisAlignment.center,
-        title: const Text('Do you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              ref.read(authControllerProvider).logoutUser(context);
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Yes',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              // do noting
-              Navigator.of(context).pop(context);
-            },
-            child: const Text(
-              'No',
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      );
-    },
-  );
+  showAlertDialog(context, () {
+    ref.read(authControllerProvider).logoutUser(context);
+    Navigator.pop(context);
+  }, 'Do you want to logout?');
 }
 
 Widget _buildAccountDetails(WidgetRef ref, BuildContext context) {
@@ -90,14 +63,9 @@ Widget _buildAccountDetails(WidgetRef ref, BuildContext context) {
               )
             : Center(
                 child: CircleAvatar(
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.grey,
+                  backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.grey,
                   radius: 50,
-                  backgroundImage: accountDetailsState.gender == 'Male'
-                      ? const AssetImage(Constants.maleProfilePic)
-                      : const AssetImage(Constants.femaleProfilePic),
+                  backgroundImage: accountDetailsState.gender == 'Male' ? const AssetImage(Constants.maleProfilePic) : const AssetImage(Constants.femaleProfilePic),
                 ),
               ),
 
@@ -177,10 +145,7 @@ Widget _buildAccountDetails(WidgetRef ref, BuildContext context) {
           leading: Container(
             height: 40,
             width: 40,
-            decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all()),
+            decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(100), border: Border.all()),
             child: const Icon(
               Icons.logout_sharp,
               color: Colors.grey,

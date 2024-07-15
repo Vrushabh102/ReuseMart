@@ -94,7 +94,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.person),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(inputType: TextInputType.name ,autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
+                            child: TextInputField(inputType: TextInputType.name, autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
                           ),
                         ],
                       ),
@@ -105,7 +105,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.email),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(inputType: TextInputType.emailAddress ,autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
+                            child: TextInputField(inputType: TextInputType.emailAddress, autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
                           ),
                         ],
                       ),
@@ -116,7 +116,8 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.lock),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField( inputType: TextInputType.name, autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
+                            child: TextInputField(
+                                inputType: TextInputType.name, autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
                           ),
                         ],
                       ),
@@ -168,12 +169,15 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                         width: width * 0.9,
                         child: ElevatedButton(
                           style: googleButtonStyle(),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.circle),
-                              SizedBox(width: 8),
-                              Text('Sign in with Google'),
+                              SizedBox(height: 22, width: 22, child: Image.asset('assets/icons/google.png')),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Sign in with Google',
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ],
                           ), // or any other Google icon you want to use
                           onPressed: () {
@@ -219,12 +223,9 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
   // create account screen
   void createAccount(String name, String email, String password, String gender) async {
     await ref.read(authControllerProvider).createAccount(name, email, password, gender, context);
-    pop();
-  }
-
-  pop() {
     Navigator.pop(context);
   }
+
 
   // method to sign in with google and store user data to the database
   Future<void> signInWithGoogle(WidgetRef ref) async {

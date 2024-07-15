@@ -43,6 +43,7 @@ class AuthController {
     final user = await _authRepository.signInWithGoogle();
     user.fold((error) {
       log('snackbar');
+      _ref.read(isLoadingProvider.notifier).state = false;
       return showSnackBar(context: context, message: error.message);
     }, (userModel) {
       // add recived userModel data to the userProvider

@@ -39,7 +39,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     bool isLightTheme = Theme.of(context).brightness == Brightness.light;
 
     return Scaffold(
-      backgroundColor: isLightTheme ? Colors.white : scaffoldDarkBackground,
       resizeToAvoidBottomInset: false,
       body: Center(
         child: Stack(

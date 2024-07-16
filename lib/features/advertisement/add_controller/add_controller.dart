@@ -29,13 +29,6 @@ class AdvertisementController {
   })  : _advertisementRepository = advertisementRepository,
         _ref = ref;
 
-  // to load all the ads posted by user
-  Future<List<AdvertisementModel>> getAllAdsPostedByUser() async {
-    final listOfAdvertisements = await _advertisementRepository.fetchAllUserAdvertisementDetails();
-
-    return listOfAdvertisements;
-  }
-
   Stream<List<AdvertisementModel>> fetchFeedAdvertisements() {
     return _advertisementRepository.fetchFeedAdvertisements();
   }

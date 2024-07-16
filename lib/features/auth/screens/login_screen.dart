@@ -98,15 +98,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 Expanded(
                                   child: TextInputField(
                                     inputType: TextInputType.name,
-                                    onSubmit: (p0) {
-                                      if (_emailController.text.isEmpty) {
-                                        showSnackBar(context: context, message: 'Enter email');
-                                      } else if (_passController.text.isEmpty) {
-                                        showSnackBar(context: context, message: 'Enter password');
-                                      } else {
-                                        checkLogin();
-                                      }
-                                    },
                                     controller: _passController,
                                     hintText: 'Password',
                                     obscure: true,
@@ -245,12 +236,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   // this is login screen
   // method to sign in with google and store user data to the database
   Future<void> signInWithGoogle(WidgetRef ref) async {
-    await ref.watch(authControllerProvider).signInWithGoogle(context);
+    await ref.watch(authControllerProvider).signInWithGoogle(context, false);
     log('login screen signInwithGoogle ended');
   }
 
   // function to check user data and to redirect to homescreen
   void checkLogin() async {
-    await ref.watch(authControllerProvider).loginUser(_emailController.text, _passController.text, context);
+    if (_emailController.text.contains('@') || _emailController.text.trim().contains('gmail.com')) {
+      log(_emailController.text.trim());
+      log('email contains @ and gmail.com');
+      await ref.watch(authControllerProvider).loginUser(_emailController.text.toLowerCase().trim(), _passController.text, context);
+    } else {
+      showSnackBar(context: context, message: 'Invalid Email Address');
+    }
   }
 }

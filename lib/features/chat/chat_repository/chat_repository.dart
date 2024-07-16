@@ -24,37 +24,28 @@ class ChatRepository {
         _auth = auth;
 
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchBuyingChats() {
-    final Stream<QuerySnapshot<Map<String, dynamic>>> documents = _firestore
-        .collection('chat_rooms')
-        .where('buyerId', isEqualTo: _auth.currentUser!.uid)
-        .snapshots();
+    final Stream<QuerySnapshot<Map<String, dynamic>>> documents = _firestore.collection('chat_rooms').where('buyerId', isEqualTo: _auth.currentUser!.uid).snapshots();
     return documents;
   }
 
-  
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchSellingChats() {
-    return _firestore
-        .collection('chat_rooms')
-        .where('sellerId', isEqualTo: _auth.currentUser!.uid)
-        .orderBy('timestamp', descending: false)
-        .snapshots();
+    return _firestore.collection('chat_rooms').where('sellerId', isEqualTo: _auth.currentUser!.uid).orderBy('timestamp', descending: false).snapshots();
   }
 
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    await _firestore.collection('chat_rooms').doc(chatId).collection('messages').doc(messageId).delete();
+  }
 
-    Future<DocumentSnapshot> fetchUserDetailsWithUid(String uid) async {
+  Future<DocumentSnapshot> fetchUserDetailsWithUid(String uid) async {
     DocumentSnapshot snapshot = await _firestore.collection('users').doc(uid).get();
     return snapshot;
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getAdvertisementById(
-      String id) async {
-    return await _firestore
-        .collection('items_posted')
-        .where('itemId', isEqualTo: id)
-        .get();
+  Future<QuerySnapshot<Map<String, dynamic>>> getAdvertisementById(String id) async {
+    return await _firestore.collection('items_posted').where('itemId', isEqualTo: id).get();
   }
 
-    Future<void> initiateChat(String sellerId, String buyerId, String itemId) async {
+  Future<void> initiateChat(String sellerId, String buyerId, String itemId) async {
     final chatRooms = _firestore.collection('chat_rooms');
 
     //constructing chat ID
@@ -76,19 +67,9 @@ class ChatRepository {
     // chatRooms.doc(chatId).
   }
 
-
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesByChatId(
-      String chatId) {
-    return _firestore
-        .collection('chat_rooms')
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp', descending: false)
-        .snapshots()
-        .handleError((error) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesByChatId(String chatId) {
+    return _firestore.collection('chat_rooms').doc(chatId).collection('messages').orderBy('timestamp', descending: false).snapshots().handleError((error) {
       log('some error occured at fetching messages');
     });
   }
-
-
 }

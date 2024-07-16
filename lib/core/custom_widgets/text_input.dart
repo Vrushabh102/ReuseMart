@@ -26,6 +26,7 @@ class TextInputField extends StatelessWidget {
       autofillHints: autofillHints,
       controller: controller,
       obscureText: obscure,
+      cursorColor: primaryColor,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(fontWeight: FontWeight.w300),

@@ -92,7 +92,7 @@ class AdvertisementNotifier extends StateNotifier<AdvertisementModel> {
   }
 
   void clearState() {
-    state = state.copyWith(name: '', description: '', price: '');
+    state = state.copyWith(name: '', description: '', price: '', photoUrl: [], itemId: '');
   }
 
   void setAdvertisementId({required String itemId}) {

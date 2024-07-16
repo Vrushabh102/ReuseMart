@@ -1,11 +1,10 @@
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/Providers/firebase_providers.dart';
 import 'package:seller_app/core/custom_widgets/item_container.dart';
 import 'package:seller_app/features/advertisement/add_controller/add_controller.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
-import 'package:seller_app/models/advertisement_model.dart';
 
 class DisplayHomeScreen extends ConsumerStatefulWidget {
   const DisplayHomeScreen({super.key});
@@ -15,20 +14,20 @@ class DisplayHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
-  List<AdvertisementModel> feedAdvertisement = [];
-
   @override
   Widget build(BuildContext context) {
     final advertisementList = ref.watch(feedAdvertisementsStreamProvider);
     final height = MediaQuery.of(context).size.height;
-    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUser = ref.read(firebaseAuthProvider).currentUser;
 
     return Scaffold(
       body: advertisementList.when(
         data: (data) {
           if (data.isNotEmpty) {
+            final fileteredData = data.where((ad) => ad.userUid != currentUser!.uid).toList();
+            log('length of ads in home screen ${data.length}');
+            log('length filtered in home screen ${fileteredData.length}');
             // storing the list received from future provider
-            feedAdvertisement.addAll(data);
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
               child: GridView.builder(
@@ -38,11 +37,10 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: feedAdvertisement.length,
+                itemCount: fileteredData.length,
                 itemBuilder: (context, index) {
-                  AdvertisementModel advertisementModel = feedAdvertisement[index];
-                  // dont show current user ads on homepage
-                  if (advertisementModel.userUid != currentUser!.uid) {
+                  // Check if the current ad is posted by the current user
+                    // Otherwise, show the ad
                     return InkWell(
                       onTap: () {
                         Navigator.push(
@@ -50,28 +48,24 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
                           MaterialPageRoute(
                             builder: (context) => DisplayItemScreen(
                               isUpdating: false,
-                              displayName: data[index].displayName,
+                              displayName: fileteredData[index].displayName,
                               isPosted: true,
-                              model: advertisementModel,
+                              model: fileteredData[index],
                             ),
                           ),
                         );
                       },
                       child: ItemContainer(
-                        userUid: advertisementModel.userUid,
-                        itemId: advertisementModel.itemId,
-                        price: advertisementModel.price,
-                        name: advertisementModel.name,
-                        information: advertisementModel.timestamp,
-                        description: advertisementModel.description,
-                        imagePath: advertisementModel.photoUrl[0],
+                        userUid: fileteredData[index].userUid,
+                        itemId: fileteredData[index].itemId,
+                        price: fileteredData[index].price,
+                        name: fileteredData[index].name,
+                        information: fileteredData[index].timestamp,
+                        description: fileteredData[index].description,
+                        imagePath: fileteredData[index].photoUrl[0],
                         network: true,
                       ),
                     );
-                  } else {
-                    log('No ads everyting is null');
-                    return null;
-                  }
                 },
               ),
             );

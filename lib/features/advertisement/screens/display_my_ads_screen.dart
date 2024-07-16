@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
 import 'package:seller_app/core/custom_widgets/item_container.dart';
 import 'package:seller_app/core/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
@@ -44,6 +43,7 @@ class MyAdsScreen extends ConsumerWidget {
                     crossAxisCount: 2,
                     mainAxisExtent: height * 0.27,
                     crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
                   ),
                   itemCount: ads.length,
                   itemBuilder: (context, index) {
@@ -66,7 +66,7 @@ class MyAdsScreen extends ConsumerWidget {
                         deleteAdvertisement(context, ad.itemId, ref);
                       },
                       child: ItemContainer(
-                        userUid: ref.read(userProvider).userUid,
+                        userUid: ad.itemId,
                         itemId: ad.itemId,
                         name: ad.name,
                         description: ad.description,

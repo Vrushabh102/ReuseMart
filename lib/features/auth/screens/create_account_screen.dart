@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:seller_app/core/Providers/current_screen_provider.dart';
 import 'package:seller_app/core/Providers/is_loading_provider.dart';
 import 'package:seller_app/core/constants.dart';
 import 'package:seller_app/core/custom_widgets/text_input.dart';
@@ -223,13 +224,13 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
   // create account screen
   void createAccount(String name, String email, String password, String gender) async {
     await ref.read(authControllerProvider).createAccount(name, email, password, gender, context);
+    ref.read(currentScrrenIndexProvider.notifier).state = 0;
     Navigator.pop(context);
   }
 
-
   // method to sign in with google and store user data to the database
   Future<void> signInWithGoogle(WidgetRef ref) async {
-    await ref.watch(authControllerProvider).signInWithGoogle(context);
+    await ref.watch(authControllerProvider).signInWithGoogle(context, true);
     log('navigate to home screen if no error');
   }
 }

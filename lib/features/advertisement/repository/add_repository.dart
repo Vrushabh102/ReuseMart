@@ -35,6 +35,7 @@ class AdvertisementRepository {
     final uid = _auth.currentUser!.uid;
     final ads = await _itemsPosted.where('userUid', isEqualTo: uid).get();
     final list = ads.docs.map((e) => AdvertisementModel.fromSnapShot(e as DocumentSnapshot<Map<String, dynamic>>)).toList();
+    log('length of fetched list in repo' + list.length.toString());
     return list;
   }
 
@@ -48,15 +49,7 @@ class AdvertisementRepository {
   // fun to post advertisment to the database
   FutureVoid postAdvertisment({required AdvertisementModel sellItemModel, required String docId}) async {
     try {
-      final documentsnapshot = await _itemsPosted.doc(docId).get();
-      final void result;
-      if (documentsnapshot.exists) {
-        // update the existing document
-        result = await _itemsPosted.doc(docId).update(sellItemModel.toJson());
-      } else {
-        // new add
-        result = await _itemsPosted.doc(docId).set(sellItemModel.toJson());
-      }
+      final result = await _itemsPosted.doc(docId).set(sellItemModel.toJson());
       return right(result);
     } catch (e) {
       return left(Failure(e.toString()));

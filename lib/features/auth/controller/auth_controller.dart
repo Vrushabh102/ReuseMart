@@ -6,8 +6,10 @@ import 'package:seller_app/core/Providers/current_screen_provider.dart';
 import 'package:seller_app/core/Providers/is_loading_provider.dart';
 import 'package:seller_app/core/Providers/user_provider.dart';
 import 'package:seller_app/features/auth/repository/auth_repository.dart';
+import 'package:seller_app/features/auth/screens/login_screen.dart';
 import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/user_model.dart';
+import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 // provider for auth controller
@@ -36,7 +38,7 @@ class AuthController {
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
   // this is authController.....
-  signInWithGoogle(BuildContext context) async {
+  signInWithGoogle(BuildContext context, bool isOnCreateAccountScreen) async {
     log('sign in with google started');
     // to show loading
     _ref.read(isLoadingProvider.notifier).state = true;
@@ -52,6 +54,15 @@ class AuthController {
       log('now what?...');
       _ref.read(isLoadingProvider.notifier).state = false;
       _ref.read(currentScrrenIndexProvider.notifier).state = 0;
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+          (route) => false);
+      if (isOnCreateAccountScreen) {
+        Navigator.pop(context);
+      }
     });
   }
 
@@ -71,9 +82,9 @@ class AuthController {
     String gender,
     BuildContext context,
   ) async {
-    _ref.read(isLoadingProvider.notifier).state = false;
-    final user = await _authRepository.createUserAuth(name, email, gender, password);
     _ref.read(isLoadingProvider.notifier).state = true;
+    final user = await _authRepository.createUserAuth(name, email, gender, password);
+    _ref.read(isLoadingProvider.notifier).state = false;
 
     // handling error
     user.fold((error) {
@@ -89,14 +100,24 @@ class AuthController {
     String password,
     BuildContext context,
   ) async {
+    _ref.read(isLoadingProvider.notifier).state = true;
     final user = await _authRepository.loginUser(email, password);
-    _ref.read(chatControllerProvider).fetchBuyingChats();
-    _ref.read(chatControllerProvider).fetchSellingChats();
+    _ref.read(isLoadingProvider.notifier).state = false;
     user.fold((l) {
       showSnackBar(context: context, message: l.message);
     }, (userModel) {
-      _ref.read(currentScrrenIndexProvider.notifier).state = 0;
       _ref.read(userProvider.notifier).setUserDetails(userModel);
+      _ref.read(chatControllerProvider).fetchBuyingChats();
+      _ref.read(chatControllerProvider).fetchSellingChats();
+
+      _ref.read(currentScrrenIndexProvider.notifier).state = 0;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+        (route) => false,
+      );
     });
   }
 
@@ -111,17 +132,25 @@ class AuthController {
 
   logoutUser(BuildContext context) async {
     _ref.watch(isLoadingProvider.notifier).state = true;
-    _ref.invalidate(fetchBuyingChatsStreamProvider);
-    _ref.invalidate(fetchSellingChatsStreamProvider);
-    _ref.invalidate(chatControllerProvider);
-    _ref.invalidate(userProvider);
+
     final result = await _authRepository.logOutUser();
     _ref.watch(isLoadingProvider.notifier).state = false;
 
     result.fold((l) {
       showSnackBar(context: context, message: l.message);
     }, (r) {
+      _ref.invalidate(fetchBuyingChatsStreamProvider);
+      _ref.invalidate(fetchSellingChatsStreamProvider);
+      _ref.invalidate(chatControllerProvider);
+      _ref.invalidate(userProvider);
       showSnackBar(context: context, message: 'Logged out');
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ),
+          (route) => false);
     });
   }
 }

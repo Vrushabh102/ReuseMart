@@ -13,6 +13,7 @@ import 'package:seller_app/models/message_model.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/services/chat_services.dart';
 import 'package:seller_app/utils/colors.dart';
+import 'package:seller_app/utils/screen_sizes.dart';
 
 class ChattingScreen extends ConsumerStatefulWidget {
   const ChattingScreen({
@@ -141,7 +142,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
               Expanded(
                 child: _buildMessageList(),
               ),
-              _buildMessageInput(height, width),
+              _buildMessageInput(width),
             ],
           ),
         ),
@@ -152,10 +153,9 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   final FocusNode focusNode = FocusNode();
 
   // text field for sending message
-  _buildMessageInput(double height, double width) {
+  _buildMessageInput(double width) {
     return Container(
       padding: const EdgeInsets.all(8),
-      height: height * 0.09,
       width: width,
       child: Row(
         children: [
@@ -174,7 +174,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
                 }
               },
               decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                contentPadding: EdgeInsets.symmetric(horizontal: 20),
                 hintText: 'Message',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(26)),
@@ -197,7 +197,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             ),
           ),
           Container(
-            height: height * 0.09,
             margin: const EdgeInsets.only(left: 3),
             width: width * 0.14,
             decoration: const BoxDecoration(
@@ -287,10 +286,29 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
     }
     return Container(
       alignment: alignment,
-      child: ChatBubble(
-        message: model.message,
-        receiver: isPrimary,
-        time: convertToDateTime(model.timestamp),
+      child: InkWell(
+        onTap: () {
+          log(document['message']);
+        },
+        onLongPress: () {
+          showAlertDialog(context, () async {
+            String chatId;
+            if (widget.isCurrentUserSelling) {
+              // current user is the seller: addmodel is of current user, 2nd one is buyer from userModel
+              chatId = '${widget.addmodel.itemId}_${widget.userModel!.userUid}';
+            } else {
+              // current user is buyer so 2nd id is of currentUser & 1st is of seller i.e userModel
+              chatId = '${widget.addmodel.itemId}_${auth.currentUser!.uid}';
+            }
+            await ref.read(chatControllerProvider).deleteMessage(chatId, document.id);
+            Navigator.pop(context);
+          }, 'Delete message?');
+        },
+        child: ChatBubble(
+          message: model.message,
+          receiver: isPrimary,
+          time: convertToDateTime(model.timestamp),
+        ),
       ),
     );
   }

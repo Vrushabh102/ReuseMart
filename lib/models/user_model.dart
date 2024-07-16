@@ -36,12 +36,13 @@ class UserModel {
   ) {
     final data = documentSnapshot.data()!;
     return UserModel(
-        likedAds: List<String>.from(data['likedAds']),
-        fullName: data['fullname'],
-        gender: data['gender'],
-        photoUrl: data['photoUrl'],
-        email: data['email'],
-        userUid: data['userUid']);
+      likedAds: List<String>.from(data['likedAds']),
+      fullName: data['fullname'],
+      gender: data['gender'],
+      photoUrl: data['photoUrl'],
+      email: data['email'],
+      userUid: data['userUid'],
+    );
   }
 
   UserModel copyWith({
@@ -94,9 +95,7 @@ class UserNotifier extends StateNotifier<UserModel> {
   }
 
   void removeLikedItem(String itemId) {
-    state = state.copyWith(
-        likedAds:
-            state.likedAds.where((element) => element != itemId).toList());
+    state = state.copyWith(likedAds: state.likedAds.where((element) => element != itemId).toList());
   }
 
   void updateLikedAds(List<String> newLikedAds) {

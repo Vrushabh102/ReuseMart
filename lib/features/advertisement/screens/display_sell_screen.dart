@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/core/Providers/advertisement_provider.dart';
@@ -57,6 +59,7 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                   height: 20,
                 ),
                 TextField(
+                  cursorColor: primaryColor,
                   decoration: InputDecoration(
                     hintText: 'Type description of item',
                     hintStyle: const TextStyle(fontWeight: FontWeight.w300),
@@ -132,6 +135,8 @@ class _SellScreenState extends ConsumerState<SellScreen> {
       setDescription: _descriptionController.text.trim(),
       setPrice: _priceController.text.trim(),
     );
+
+    log('add values at enter details screen ${ref.read(advertisementProvider).name}');
 
     // _itemNameController.clear();
     // _descriptionController.clear();

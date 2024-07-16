@@ -42,7 +42,7 @@ class DisplayItemScreen extends ConsumerStatefulWidget {
 }
 
 class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
-  List<String>? downloadableImageUrls;
+  List<String>? downloadableImageUrls = [];
   List<String> updatedImageDownloadUrls = [];
   List<Uint8List> selectedUint8Imageslist = [];
 
@@ -284,9 +284,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
                               backgroundImage: (widget.isPosted)
                                   ?
                                   // add is posted, so model is not null
-                                  (widget.model?.photoUrl != null)
-                                      ? NetworkImage(widget.model!.profilePhotoUrl.toString()) as ImageProvider
-                                      : const AssetImage(Constants.maleProfilePic)
+                                  const AssetImage(Constants.maleProfilePic)
                                   // add is not posted means it is in sell item page or my ads
                                   : (currentUserProvider.photoUrl != null)
                                       ? NetworkImage(currentUserProvider.photoUrl.toString()) as ImageProvider
@@ -294,7 +292,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
                                           Constants.maleProfilePic,
                                         ),
                               onBackgroundImageError: (exception, stackTrace) {
-                                log('image exception $exception');
+                                log('image exception $exception $stackTrace');
                               },
                             ),
                           ),
@@ -394,13 +392,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
 
   // called when advertisement needs to be posted on firebase firestore
   uploadAdvertisementToFirestore(WidgetRef ref) {
-    // uploading post data to firebase
-    // if (downloadableImageUrls != null && downloadableImageUrls!.isNotEmpty ) {
-    //   postAdvertisement(ref);
-    // } else {
-    //   log('wait a minute');
-    //   // showSnackBar(context: context, message: 'Wait a minute..');
-    // }
+    log('post ad started');
     postAdvertisement(ref);
   }
 
@@ -426,17 +418,19 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
 
   postAdvertisement(WidgetRef ref) async {
     log('post ad started');
+    log('add state at st of post ad ${ref.read(advertisementProvider).name}');
     ref.read(isLoadingProvider.notifier).state = true;
-    await convertToDownloadableUrls();
-    String timestamp = DateAndTime().convertToTime(Timestamp.now());
     final advertisementState = ref.watch(advertisementProvider);
     final userDetails = ref.read(userProvider);
+    String timestamp = DateAndTime().convertToTime(Timestamp.now());
+    // ref.invalidate(advertisementProvider);
     // creating itemId
     // itemId - itemNameInitial+price+userUid
-    String itemId = advertisementState.name[0] + advertisementState.price + ref.read(userProvider).userUid;
+    String itemId = advertisementState.name + advertisementState.price + ref.read(userProvider).userUid;
+    ref.read(advertisementProvider.notifier).setAdvertisementId(itemId: itemId);
+    log('item id is ' + itemId);
 
-    log(itemId);
-
+    await convertToDownloadableUrls();
     // creating user model to display information to the displayitemscreen
     AdvertisementModel model = AdvertisementModel(
       itemId: itemId,
@@ -450,19 +444,28 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       price: advertisementState.price,
     );
 
-    uploadToDatabase(model, itemId);
+    await uploadToDatabase(model, itemId);
 
     ref.read(advertisementProvider.notifier).clearState();
 
+    // clearing global downloadableImageUrls if there are any....
+    if (downloadableImageUrls != null && downloadableImageUrls!.isNotEmpty) {
+      log(downloadableImageUrls!.length.toString());
+      downloadableImageUrls!.clear();
+    }
     ref.read(isLoadingProvider.notifier).state = false;
 
     ref.read(currentScrrenIndexProvider.notifier).state = 2;
     log('post ad ended');
   }
 
-  uploadToDatabase(AdvertisementModel model, String itemId) {
+  uploadToDatabase(AdvertisementModel model, String itemId) async {
     // uploading add to database
-    ref.read(advertisementControllerProvider).postAdvertisement(sellItemModel: model, docId: itemId, context: context);
+    if (model.photoUrl.length > 0) {
+      await ref.read(advertisementControllerProvider).postAdvertisement(sellItemModel: model, docId: itemId, context: context);
+    } else {
+      showSnackBar(context: context, message: 'sell item length ${model.photoUrl.length.toString()}');
+    }
   }
 
   updateAdd() async {
@@ -503,15 +506,16 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     List<String> downloadUrls = [];
     if (widget.imagesInUint8 != null && widget.imagesInUint8!.isNotEmpty) {
       final addState = ref.watch(advertisementProvider);
-      log('item id in convertToDownloadable${addState.itemId}');
+      log('item id in conv down ${addState.itemId}');
       for (var image in widget.imagesInUint8!) {
         String downloadUrl = await StorageServices().getDownloadURLs(image, addState.itemId);
         downloadUrls.add(downloadUrl);
+        downloadableImageUrls = downloadUrls;
       }
     } else {
       showSnackBar(context: context, message: 'Empty images');
     }
-    downloadableImageUrls = downloadUrls;
+    log('length of global downloadable imag urls' + downloadableImageUrls!.length.toString());
   }
 
   Future<void> convertToDownloadableUrlsForUpdation(List<Uint8List> uint8images) async {

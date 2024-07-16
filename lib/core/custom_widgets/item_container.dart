@@ -67,7 +67,7 @@ class ItemContainer extends ConsumerWidget {
                     child: Text(
                       'Image not found',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                     ),
                   );

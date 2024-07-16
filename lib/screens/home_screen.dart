@@ -83,7 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reusemart'),
+        title: const Text('ReuseMart'),
       ),
 
       // setting the screen on this page

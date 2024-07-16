@@ -161,6 +161,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
         children: [
           Expanded(
             child: TextField(
+              cursorColor: primaryColor,
               maxLines: null,
               minLines: 1,
               focusNode: focusNode,
@@ -248,6 +249,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             scrollToBottom();
           });
           return ListView(
+            padding: EdgeInsets.symmetric(horizontal: 4),
             controller: scrollController,
             children: data.docs.map((document) => _buildMessageItem(document)).toList(),
           );

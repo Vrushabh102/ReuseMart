@@ -18,7 +18,7 @@ class ChatBubble extends StatelessWidget {
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.7,
       ),
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+      padding: const EdgeInsets.fromLTRB(18, 5, 18, 5),
       margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: receiver ? primaryColor : Colors.grey),
       child: Column(

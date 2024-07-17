@@ -134,7 +134,7 @@ class _EditAdvertisementState extends ConsumerState<EditAdvertisement> {
     final provider = ref.watch(advertisementProvider.notifier);
 
     // set the item id to be able to update the advertisement
-    ref.read(advertisementProvider.notifier).setAdvertisementId(itemId: widget.advertisementModel!.name[0] + widget.advertisementModel!.price + ref.read(userProvider).userUid);
+    ref.read(advertisementProvider.notifier).setAdvertisementId(itemId: widget.advertisementModel!.name + widget.advertisementModel!.price + ref.read(userProvider).userUid);
 
     
 

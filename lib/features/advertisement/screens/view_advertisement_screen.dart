@@ -15,6 +15,7 @@ import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/features/liked_items/controller/liked_item_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/features/chat/chat_screens/chatting_screen.dart';
+import 'package:seller_app/screens/home_screen.dart';
 import 'package:seller_app/services/storage_services.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/datetime_convet.dart';
@@ -489,8 +490,10 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     List<String> uniqueUpdatedImageDownloadUrls = updatedImageDownloadUrls.toSet().toList();
     log('updatedImgdownurls set img len ${updatedImageDownloadUrls.length}');
 
+    log('item id in updation ${advertisementState.itemId}');
+
     // Update the advertisement
-    addController.updateAdvertisement(
+    await addController.updateAdvertisement(
       itemId: advertisementState.itemId,
       newPrice: advertisementState.price,
       newName: advertisementState.name,
@@ -505,6 +508,12 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     ref.read(isLoadingProvider.notifier).state = false;
 
     ref.read(currentScrrenIndexProvider.notifier).state = 2;
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+        (route) => false);
   }
 
   // fun to convert list of uint8list to list of downloadableurl

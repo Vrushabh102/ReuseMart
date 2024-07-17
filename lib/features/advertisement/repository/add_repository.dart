@@ -94,4 +94,12 @@ class AdvertisementRepository {
       return left(Failure(e.toString()));
     }
   }
+
+  Future<QuerySnapshot<Object?>> searchForItems(String filteredItemInput) async {
+    // search for items equal to any one of these....
+    String firstCaps = filteredItemInput[0].toUpperCase() + filteredItemInput.toLowerCase().substring(1, filteredItemInput.length);
+    log('i am searching for $firstCaps');
+    // Firestore query for items where the name starts with the filtered input
+    return await _itemsPosted.where('name', isEqualTo: firstCaps).get();
+  }
 }

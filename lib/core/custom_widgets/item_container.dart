@@ -58,10 +58,12 @@ class ItemContainer extends ConsumerWidget {
                 topLeft: Radius.circular(5),
                 topRight: Radius.circular(5),
               ),
-              child: Image.network(
-                imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
+              child: FadeInImage(
+                // placeholderFit: BoxFit.cover,
+                height: 20,
+                width: 20,
+                fadeInDuration: Duration(milliseconds: 1),
+                imageErrorBuilder: (context, error, stackTrace) {
                   log('some error occured at item container $error');
                   return const Center(
                     child: Text(
@@ -72,6 +74,13 @@ class ItemContainer extends ConsumerWidget {
                     ),
                   );
                 },
+                placeholder: AssetImage(
+                  'assets/icons/loading.png',
+                ),
+                fit: BoxFit.contain,
+                image: NetworkImage(
+                  imagePath,
+                ),
               ),
             ),
           ),

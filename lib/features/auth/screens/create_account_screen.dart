@@ -159,9 +159,9 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                         ),
                       ),
 
-                      SizedBox(height: height * 0.022),
+                      SizedBox(height: height * 0.019),
                       const Center(child: Text('OR')),
-                      SizedBox(height: height * 0.022),
+                      SizedBox(height: height * 0.019),
 
                       // google sing in button
                       Container(
@@ -187,7 +187,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                         ),
                       ),
 
-                      SizedBox(height: height * 0.01),
+                      SizedBox(height: height * 0.008),
 
                       InkWell(
                         onTap: () {

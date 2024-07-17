@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/features/advertisement/repository/add_repository.dart';
@@ -14,8 +17,18 @@ final feedAdvertisementsStreamProvider = StreamProvider<List<AdvertisementModel>
 final advertisementControllerProvider = Provider<AdvertisementController>((ref) {
   return AdvertisementController(
     advertisementRepository: ref.watch(advertisementRepositoryProvider),
-    ref: ref,
+  ref: ref,
   );
+});
+
+final fetchSearchedAdvertisementsFutureProvider = FutureProvider.family<List<AdvertisementModel>, String>((ref, itemName) async {
+  final advertisementRepo = ref.read(advertisementRepositoryProvider);
+  final querysnaps = await advertisementRepo.searchForItems(itemName);
+  log('querysnaps len ' + querysnaps.docs.length.toString());
+  log('item name' + itemName);
+  final advers = querysnaps.docs.map((e) => AdvertisementModel.fromSnapShot(e as DocumentSnapshot<Map<String, dynamic>>)).toList();
+  log('len is ${advers.length}');
+  return advers;
 });
 
 class AdvertisementController {
@@ -73,6 +86,13 @@ class AdvertisementController {
       photoUrls: photoUrls,
     );
   }
+
+//   // to search for any item...
+//   Future<List<AdvertisementModel>> searchForItems(String itemName) async {
+// //  as QuerySnapshot<Map<String, dynamic>>;
+//     // final advertisements = query.docs.map((e) => AdvertisementModel.fromSnapShot(e)).toList();
+//     // return advertisements;
+//   }
 }
 
 final userPostedAdsProvider = StateNotifierProvider<UserPostedAdvertisements, List<AdvertisementModel>>((ref) {

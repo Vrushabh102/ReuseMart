@@ -117,9 +117,19 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   }
 
   void checkDetails() {
+    final priceText = _priceController.text.trim();
+    final numericRegex = RegExp(r'^[0-9]+$');
+    if (priceText.isEmpty) {
+      showSnackBar(context: context, message: 'Price cannot be empty');
+      return;
+    }
+    if (!numericRegex.hasMatch(priceText)) {
+      showSnackBar(context: context, message: 'Price should only contain numbers');
+      return;
+    }
     if (_itemNameController.text.isEmpty || _descriptionController.text.isEmpty || _priceController.text.isEmpty) {
       showSnackBar(context: context, message: 'Enter details');
-    } else if (int.parse(_priceController.text.trim()) < 100) {
+    } else if (int.parse(priceText) < 100) {
       showSnackBar(context: context, message: 'Price should be atleast Rs.100');
     } else {
       // all details are filled
@@ -130,8 +140,11 @@ class _SellScreenState extends ConsumerState<SellScreen> {
   // fun to add details to the state
   void addDetailsState() {
     final provider = ref.watch(advertisementProvider.notifier);
+    // make the first char capital
+    final allLower = _itemNameController.text.toLowerCase();
+    String filteredName = allLower[0].toUpperCase() + allLower.substring(1, allLower.length);
     provider.setValues(
-      setName: _itemNameController.text.trim(),
+      setName: filteredName,
       setDescription: _descriptionController.text.trim(),
       setPrice: _priceController.text.trim(),
     );

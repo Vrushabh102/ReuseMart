@@ -42,7 +42,7 @@ class DisplayItemScreen extends ConsumerStatefulWidget {
 }
 
 class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
-  List<String>? downloadableImageUrls = [];
+  List<String> downloadableImageUrls = [];
   List<String> updatedImageDownloadUrls = [];
   List<Uint8List> selectedUint8Imageslist = [];
 
@@ -339,7 +339,10 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
                 onPressed: () {
                   makeOffer();
                 },
-                child: const Text('Make An Offer'),
+                child: Text(
+                  'Make An Offer',
+                  style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white),
+                ),
               ),
             )
           : (widget.isPosted)
@@ -358,9 +361,9 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
                         uploadAdvertisementToFirestore(ref);
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       'post advertisement',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white),
                     ),
                   ),
                 ),
@@ -431,6 +434,9 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     log('item id is ' + itemId);
 
     await convertToDownloadableUrls();
+
+    log('length of global downloadable imag urls' + downloadableImageUrls.length.toString());
+    log(downloadableImageUrls[0]);
     // creating user model to display information to the displayitemscreen
     AdvertisementModel model = AdvertisementModel(
       itemId: itemId,
@@ -440,7 +446,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       timestamp: timestamp,
       name: advertisementState.name,
       description: advertisementState.description,
-      photoUrl: downloadableImageUrls as List<String>,
+      photoUrl: downloadableImageUrls,
       price: advertisementState.price,
     );
 
@@ -449,9 +455,9 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     ref.read(advertisementProvider.notifier).clearState();
 
     // clearing global downloadableImageUrls if there are any....
-    if (downloadableImageUrls != null && downloadableImageUrls!.isNotEmpty) {
-      log(downloadableImageUrls!.length.toString());
-      downloadableImageUrls!.clear();
+    if (downloadableImageUrls.isNotEmpty) {
+      log(downloadableImageUrls.length.toString());
+      downloadableImageUrls.clear();
     }
     ref.read(isLoadingProvider.notifier).state = false;
 
@@ -508,14 +514,13 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       final addState = ref.watch(advertisementProvider);
       log('item id in conv down ${addState.itemId}');
       for (var image in widget.imagesInUint8!) {
-        String downloadUrl = await StorageServices().getDownloadURLs(image, addState.itemId);
+        String downloadUrl = await StorageServices().getDownloadURLs(image, addState.itemId, image.hashCode);
         downloadUrls.add(downloadUrl);
-        downloadableImageUrls = downloadUrls;
       }
+      downloadableImageUrls.addAll(downloadUrls);
     } else {
       showSnackBar(context: context, message: 'Empty images');
     }
-    log('length of global downloadable imag urls' + downloadableImageUrls!.length.toString());
   }
 
   Future<void> convertToDownloadableUrlsForUpdation(List<Uint8List> uint8images) async {
@@ -526,7 +531,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     List<String> tempUrls = [];
 
     for (var element in imagesCopy) {
-      final downloadUrl = await StorageServices().getDownloadURLs(element, ref.read(advertisementProvider).itemId);
+      final downloadUrl = await StorageServices().getDownloadURLs(element, ref.read(advertisementProvider).itemId, element.hashCode);
       tempUrls.add(downloadUrl);
     }
 

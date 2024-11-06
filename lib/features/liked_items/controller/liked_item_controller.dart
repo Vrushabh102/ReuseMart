@@ -49,7 +49,7 @@ class LikedItemController {
 
   Future<void> _updateLikedItemList() async {
     log('update liked item');
-    final likedAdsList = _ref.read(userProvider).likedAds; // Use read instead of watch
+    final likedAdsList = _ref.read(userProvider).likedAds;
     await _likedItemRepository.updateLikedItems(likedAdsList);
   }
 

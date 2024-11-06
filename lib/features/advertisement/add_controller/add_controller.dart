@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/features/advertisement/repository/add_repository.dart';
 import 'package:seller_app/models/advertisement_model.dart';
-import 'package:seller_app/screens/home_screen.dart';
+import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 // home screen advertisements stream provider

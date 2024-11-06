@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/core/Providers/advertisement_provider.dart';
@@ -101,7 +100,10 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
               },
               error: (Object error, StackTrace stackTrace) {
                 return Center(
-                  child: Text('some error occured....$error', style: const TextStyle(fontSize: 20)),
+                  child: Text(
+                    'some error occured....$error',
+                    style: const TextStyle(fontSize: 20),
+                  ),
                 );
               },
             ),
@@ -109,7 +111,9 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
   }
 
   Widget fetchSearchedAds(double height) {
-    return ref.watch(fetchSearchedAdvertisementsFutureProvider(ref.read(searchQueryProvider).trim())).when(data: (data) {
+    return ref
+        .watch(fetchSearchedAdvertisementsFutureProvider(ref.read(searchQueryProvider).trim()))
+        .when(data: (data) {
       if (data.isNotEmpty) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),

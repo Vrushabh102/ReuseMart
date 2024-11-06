@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/firebase_options.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
-import 'package:seller_app/screens/home_screen.dart';
+import 'package:seller_app/features/home/home_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/utils/colors.dart';
 
@@ -51,7 +50,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   UserModel? userModel;
   // fun to fetch user detils and store it to the userProvider
   Future<void> getUserData(WidgetRef ref, User data) async {
-    log('get data called');
     final userModelFromFirebase = await ref.watch(authControllerProvider).getUserData(data.uid).first;
     ref.read(userProvider.notifier).setUserDetails(userModelFromFirebase);
   }
@@ -63,13 +61,9 @@ class _MyAppState extends ConsumerState<MyApp> {
       body: ref.watch(authStateChangeStreamProvider).when(
         data: (data) {
           if (data != null) {
-            log('data is not null');
             getUserData(ref, data);
-            log('going to homescrreen 2');
             return const HomeScreen();
-            // return const HomeScreen();
           } else {
-            log('data is null');
             return const LoginScreen();
           }
         },

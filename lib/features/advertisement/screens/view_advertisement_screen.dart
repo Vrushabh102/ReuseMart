@@ -15,7 +15,7 @@ import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/features/liked_items/controller/liked_item_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/features/chat/chat_screens/chatting_screen.dart';
-import 'package:seller_app/screens/home_screen.dart';
+import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/services/storage_services.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/datetime_convet.dart';

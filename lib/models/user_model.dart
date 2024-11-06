@@ -4,15 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class UserModel {
-  final String? photoUrl; //can be null if user signs in with email and password
   final String email;
   final String? fullName;
   final String userUid;
   final String? gender;
   final List<String> likedAds;
+  final String? photoUrl;
 
   const UserModel({
-    this.photoUrl,
+    required this.photoUrl,
     required this.gender,
     required this.fullName,
     required this.email,
@@ -73,7 +73,7 @@ class UserNotifier extends StateNotifier<UserModel> {
             fullName: '',
             email: '',
             userUid: '',
-            photoUrl: null,
+            photoUrl: '',
             likedAds: [],
           ),
         );

@@ -9,7 +9,7 @@ import 'package:seller_app/features/auth/repository/auth_repository.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
 import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/user_model.dart';
-import 'package:seller_app/screens/home_screen.dart';
+import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 // provider for auth controller

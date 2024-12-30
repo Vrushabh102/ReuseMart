@@ -1,11 +1,10 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/features/advertisement/repository/add_repository.dart';
+import 'package:seller_app/features/home/home_screens/home_screen.dart';
 import 'package:seller_app/models/advertisement_model.dart';
-import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 // home screen advertisements stream provider
@@ -24,10 +23,7 @@ final advertisementControllerProvider = Provider<AdvertisementController>((ref) 
 final fetchSearchedAdvertisementsFutureProvider = FutureProvider.family<List<AdvertisementModel>, String>((ref, itemName) async {
   final advertisementRepo = ref.read(advertisementRepositoryProvider);
   final querysnaps = await advertisementRepo.searchForItems(itemName);
-  log('querysnaps len ' + querysnaps.docs.length.toString());
-  log('item name' + itemName);
   final advers = querysnaps.docs.map((e) => AdvertisementModel.fromSnapShot(e as DocumentSnapshot<Map<String, dynamic>>)).toList();
-  log('len is ${advers.length}');
   return advers;
 });
 

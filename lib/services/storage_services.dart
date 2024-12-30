@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +14,6 @@ class StorageServices {
       TaskSnapshot snapshot = await uploadTask;
       return snapshot.ref.getDownloadURL();
     } catch (e) {
-      log('some error $e');
       return '';
     }
   }

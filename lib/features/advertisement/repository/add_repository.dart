@@ -1,10 +1,9 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
 import 'package:seller_app/core/failure.dart';
 import 'package:seller_app/core/type_defs.dart';
 import 'package:seller_app/models/advertisement_model.dart';
@@ -35,7 +34,6 @@ class AdvertisementRepository {
     final uid = _auth.currentUser!.uid;
     final ads = await _itemsPosted.where('userUid', isEqualTo: uid).get();
     final list = ads.docs.map((e) => AdvertisementModel.fromSnapShot(e as DocumentSnapshot<Map<String, dynamic>>)).toList();
-    log('length of fetched list in repo' + list.length.toString());
     return list;
   }
 
@@ -90,7 +88,6 @@ class AdvertisementRepository {
       });
       return right(result);
     } catch (e) {
-      log('some error');
       return left(Failure(e.toString()));
     }
   }
@@ -98,7 +95,7 @@ class AdvertisementRepository {
   Future<QuerySnapshot<Object?>> searchForItems(String filteredItemInput) async {
     // search for items equal to any one of these....
     String firstCaps = filteredItemInput[0].toUpperCase() + filteredItemInput.toLowerCase().substring(1, filteredItemInput.length);
-    log('i am searching for $firstCaps');
+    
     // Firestore query for items where the name starts with the filtered input
     return await _itemsPosted.where('name', isEqualTo: firstCaps).get();
   }

@@ -1,10 +1,9 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/advertisement_provider.dart';
-import 'package:seller_app/core/custom_widgets/text_input.dart';
-import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/providers/advertisement_provider.dart';
+import 'package:seller_app/common/custom_widgets/text_input.dart';
+import 'package:seller_app/common/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/pick_image_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
@@ -98,7 +97,7 @@ class _SellScreenState extends ConsumerState<SellScreen> {
                       checkDetails();
                     },
                     style: loginButtonStyle().copyWith(
-                      minimumSize: MaterialStatePropertyAll(
+                      minimumSize: WidgetStatePropertyAll(
                         Size(width * 0.9, height * 0.06),
                       ),
                     ),
@@ -148,8 +147,6 @@ class _SellScreenState extends ConsumerState<SellScreen> {
       setDescription: _descriptionController.text.trim(),
       setPrice: _priceController.text.trim(),
     );
-
-    log('add values at enter details screen ${ref.read(advertisementProvider).name}');
 
     // _itemNameController.clear();
     // _descriptionController.clear();

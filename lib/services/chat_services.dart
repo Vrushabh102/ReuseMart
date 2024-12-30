@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:seller_app/models/message_model.dart';
 
@@ -10,7 +9,6 @@ class ChatServices {
       required String message,
       required String senderId,
       required String reciverId}) async {
-    log('chat id in send message $chatId');
     DocumentReference documentReference =
         _fs.collection('chat_rooms').doc(chatId);
 

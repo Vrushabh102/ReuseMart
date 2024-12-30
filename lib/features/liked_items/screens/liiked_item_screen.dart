@@ -1,9 +1,8 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
-import 'package:seller_app/core/custom_widgets/item_container.dart';
+import 'package:seller_app/providers/user_provider.dart';
+import 'package:seller_app/common/custom_widgets/item_container.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/features/liked_items/controller/liked_item_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
@@ -68,7 +67,6 @@ class LikedItems extends ConsumerWidget {
                       ),
                     );
                   } else {
-                    log('No ads everyting is null');
                     return null;
                   }
                 },

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 ButtonStyle loginButtonStyle() {
   return const ButtonStyle(
-    shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
-    elevation: MaterialStatePropertyAll(0),
-    backgroundColor: MaterialStatePropertyAll(Color(0xff00c6a7)),
+    shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
+    elevation: WidgetStatePropertyAll(0),
+    backgroundColor: WidgetStatePropertyAll(Color(0xff00c6a7)),
   );
 }
 
@@ -18,10 +18,10 @@ BoxDecoration googleButtonDecoration() {
 
 ButtonStyle googleButtonStyle() {
   return const ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(
+      backgroundColor: WidgetStatePropertyAll(
         Colors.white,
       ),
-      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(14)),
       )));
 }

@@ -1,9 +1,8 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/custom_widgets/item_container.dart';
-import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/common/custom_widgets/item_container.dart';
+import 'package:seller_app/common/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/features/advertisement/add_controller/add_controller.dart';
 import 'package:seller_app/features/advertisement/screens/display_sell_screen.dart';
@@ -16,7 +15,6 @@ class MyAdsScreen extends ConsumerWidget {
     showAlertDialog(
       context,
       () {
-        log('deletion started');
         ref.read(userPostedAdsProvider.notifier).deleteAdvertisementById(itemId);
         Navigator.pop(context);
       },
@@ -99,7 +97,7 @@ class MyAdsScreen extends ConsumerWidget {
                         ));
                       },
                       style: loginButtonStyle().copyWith(
-                        minimumSize: MaterialStatePropertyAll(
+                        minimumSize: WidgetStatePropertyAll(
                           Size(width * 0.85, height * 0.06),
                         ),
                       ),

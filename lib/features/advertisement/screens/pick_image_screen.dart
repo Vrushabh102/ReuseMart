@@ -2,9 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
-import 'package:seller_app/core/custom_widgets/display_image.dart';
-import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/providers/user_provider.dart';
+import 'package:seller_app/common/custom_widgets/display_image.dart';
+import 'package:seller_app/common/custom_styles/button_styles.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
@@ -89,7 +89,7 @@ class _SelectImageScreenState extends ConsumerState<SelectImageScreen> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: ElevatedButton(
                   style: loginButtonStyle().copyWith(
-                    minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06)),
+                    minimumSize: WidgetStatePropertyAll(Size(width * 0.9, height * 0.06)),
                   ),
                   onPressed: () async {
                     await selectImageScreen(context);
@@ -113,7 +113,7 @@ class _SelectImageScreenState extends ConsumerState<SelectImageScreen> {
                   padding: const EdgeInsets.only(bottom: 20),
                   child: ElevatedButton(
                     style: loginButtonStyle().copyWith(
-                      minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06)),
+                      minimumSize: WidgetStatePropertyAll(Size(width * 0.9, height * 0.06)),
                     ),
                     onPressed: () async {
                       if ((uint8images != null && uint8images!.isNotEmpty) || (networkImages != null && networkImages!.isNotEmpty)) {

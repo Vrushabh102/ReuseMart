@@ -1,8 +1,7 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/user_provider.dart';
 
 class ItemContainer extends ConsumerWidget {
   const ItemContainer({
@@ -64,7 +63,6 @@ class ItemContainer extends ConsumerWidget {
                 width: 20,
                 fadeInDuration: Duration(milliseconds: 1),
                 imageErrorBuilder: (context, error, stackTrace) {
-                  log('some error occured at item container $error');
                   return const Center(
                     child: Text(
                       'Image not found',

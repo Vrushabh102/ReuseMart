@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/current_screen_provider.dart';
-import 'package:seller_app/core/Providers/is_loading_provider.dart';
+import 'package:seller_app/providers/current_screen_provider.dart';
+import 'package:seller_app/providers/is_loading_provider.dart';
 import 'package:seller_app/core/constants.dart';
-import 'package:seller_app/core/custom_widgets/text_input.dart';
+import 'package:seller_app/common/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
-import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/common/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
@@ -47,9 +45,7 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
           onChanged: (value) {
             setState(
               () {
-                log(value);
                 select = value;
-                log('selct is $select');
               },
             );
           },
@@ -95,7 +91,13 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.person),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(inputType: TextInputType.name, autofillHints: const [AutofillHints.name], controller: _nameController, hintText: 'Full Name', obscure: false),
+                            child: TextInputField(
+                              inputType: TextInputType.name,
+                              autofillHints: const [AutofillHints.name],
+                              controller: _nameController,
+                              hintText: 'Full Name',
+                              obscure: false,
+                            ),
                           ),
                         ],
                       ),
@@ -106,7 +108,12 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           const Icon(Icons.email),
                           SizedBox(width: width * 0.03),
                           Expanded(
-                            child: TextInputField(inputType: TextInputType.emailAddress, autofillHints: const [AutofillHints.email], controller: _emailController, hintText: 'Email', obscure: false),
+                            child: TextInputField(
+                                inputType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                controller: _emailController,
+                                hintText: 'Email',
+                                obscure: false),
                           ),
                         ],
                       ),
@@ -118,7 +125,11 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           SizedBox(width: width * 0.03),
                           Expanded(
                             child: TextInputField(
-                                inputType: TextInputType.name, autofillHints: const [AutofillHints.password], controller: _createPassController, hintText: 'Create Password', obscure: true),
+                                inputType: TextInputType.name,
+                                autofillHints: const [AutofillHints.password],
+                                controller: _createPassController,
+                                hintText: 'Create Password',
+                                obscure: true),
                           ),
                         ],
                       ),
@@ -141,7 +152,10 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                       ElevatedButton(
                         onPressed: () {
                           // create new account button
-                          if (_nameController.text.isEmpty || _emailController.text.isEmpty || _createPassController.text.isEmpty || select.isEmpty) {
+                          if (_nameController.text.isEmpty ||
+                              _emailController.text.isEmpty ||
+                              _createPassController.text.isEmpty ||
+                              select.isEmpty) {
                             showSnackBar(context: context, message: 'Enter Details');
                           } else {
                             createAccount(
@@ -152,7 +166,8 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                             );
                           }
                         },
-                        style: loginButtonStyle().copyWith(minimumSize: MaterialStatePropertyAll(Size(width * 0.9, height * 0.06))),
+                        style: loginButtonStyle().copyWith(
+                            minimumSize: WidgetStatePropertyAll(Size(width * 0.9, height * 0.06))),
                         child: const Text(
                           'Create Account',
                           style: TextStyle(color: Colors.white),
@@ -173,7 +188,10 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: 22, width: 22, child: Image.asset('assets/icons/google.png')),
+                              SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: Image.asset('assets/icons/google.png')),
                               const SizedBox(width: 8),
                               const Text(
                                 'Sign in with Google',
@@ -191,7 +209,10 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
 
                       InkWell(
                         onTap: () {
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginScreen()), (route) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              (route) => false);
                         },
                         child: const Center(
                           child: Text(
@@ -231,6 +252,5 @@ class SignInScreenState extends ConsumerState<SignInScreen> {
   // method to sign in with google and store user data to the database
   Future<void> signInWithGoogle(WidgetRef ref) async {
     await ref.watch(authControllerProvider).signInWithGoogle(context, true);
-    log('navigate to home screen if no error');
   }
 }

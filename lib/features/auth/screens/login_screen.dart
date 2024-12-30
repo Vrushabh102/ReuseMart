@@ -1,13 +1,12 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/is_loading_provider.dart';
-import 'package:seller_app/core/custom_widgets/text_input.dart';
+import 'package:seller_app/providers/is_loading_provider.dart';
+import 'package:seller_app/common/custom_widgets/text_input.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/features/auth/screens/create_account_screen.dart';
 import 'package:seller_app/features/auth/screens/forgot_pw.dart';
 import 'package:seller_app/utils/colors.dart';
-import 'package:seller_app/core/custom_styles/button_styles.dart';
+import 'package:seller_app/common/custom_styles/button_styles.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -153,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           }
                         },
                         style: loginButtonStyle().copyWith(
-                          minimumSize: MaterialStatePropertyAll(
+                          minimumSize: WidgetStatePropertyAll(
                             Size(width * 0.9, height * 0.06),
                           ),
                         ),
@@ -237,14 +236,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   // method to sign in with google and store user data to the database
   Future<void> signInWithGoogle(WidgetRef ref) async {
     await ref.watch(authControllerProvider).signInWithGoogle(context, false);
-    log('login screen signInwithGoogle ended');
   }
 
   // function to check user data and to redirect to homescreen
   void checkLogin() async {
     if (_emailController.text.contains('@') || _emailController.text.trim().contains('gmail.com')) {
-      log(_emailController.text.trim());
-      log('email contains @ and gmail.com');
       await ref.watch(authControllerProvider).loginUser(_emailController.text.toLowerCase().trim(), _passController.text, context);
     } else {
       showSnackBar(context: context, message: 'Invalid Email Address');

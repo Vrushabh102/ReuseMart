@@ -1,13 +1,12 @@
-import 'dart:developer';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/advertisement_provider.dart';
-import 'package:seller_app/core/Providers/current_screen_provider.dart';
-import 'package:seller_app/core/Providers/is_loading_provider.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/advertisement_provider.dart';
+import 'package:seller_app/providers/current_screen_provider.dart';
+import 'package:seller_app/providers/is_loading_provider.dart';
+import 'package:seller_app/providers/user_provider.dart';
 import 'package:seller_app/core/constants.dart';
 import 'package:seller_app/features/advertisement/add_controller/add_controller.dart';
 import 'package:seller_app/features/advertisement/screens/edit_ad_screen.dart';
@@ -15,11 +14,12 @@ import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/features/liked_items/controller/liked_item_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
 import 'package:seller_app/features/chat/chat_screens/chatting_screen.dart';
-import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/services/storage_services.dart';
 import 'package:seller_app/utils/colors.dart';
 import 'package:seller_app/utils/datetime_convet.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
+
+import '../../home/home_screens/home_screen.dart';
 
 class DisplayItemScreen extends ConsumerStatefulWidget {
   const DisplayItemScreen({
@@ -56,7 +56,6 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     List<Widget> buildImageSliders() {
       List<Widget> imageSliders = [];
       if (widget.networkImages != null) {
-        log('1st');
         imageSliders.addAll(widget.networkImages!.map((item) {
           if (widget.isUpdating) {
             updatedImageDownloadUrls.add(item);
@@ -79,8 +78,6 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       }
       // when posting add
       if (widget.imagesInUint8 != null) {
-        log('2nd');
-
         imageSliders.addAll(widget.imagesInUint8!.map((item) {
           if (widget.isUpdating) {
             selectedUint8Imageslist.add(item);
@@ -100,9 +97,7 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       }
       // when viewing add from feed/myads
       if (widget.model != null && widget.model!.photoUrl.isNotEmpty) {
-        log('3rd');
         imageSliders.addAll(widget.model!.photoUrl.map((modelImage) {
-          log('3rd inside map');
           return Container(
             height: height * 0.34,
             width: width * 0.74,
@@ -116,12 +111,10 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
           );
         }));
       }
-      log('fun imagesliders len ${imageSliders.length}');
       return imageSliders;
     }
 
     List<Widget> widgetimageSliders = buildImageSliders();
-    log('image sliders${widgetimageSliders.length}');
 
     final currentUserProvider = ref.watch(userProvider);
     final advertisementState = ref.watch(advertisementProvider);
@@ -293,7 +286,6 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
                                           Constants.maleProfilePic,
                                         ),
                               onBackgroundImageError: (exception, stackTrace) {
-                                log('image exception $exception $stackTrace');
                               },
                             ),
                           ),
@@ -396,12 +388,10 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
 
   // called when advertisement needs to be posted on firebase firestore
   uploadAdvertisementToFirestore(WidgetRef ref) {
-    log('post ad started');
     postAdvertisement(ref);
   }
 
   changeHeart(WidgetRef ref) {
-    log('change heart called');
     final condition = ref.read(userProvider).likedAds.contains(widget.model?.itemId);
     if (condition) {
       // item id is in the likeditems
@@ -415,14 +405,11 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
       // item is not in the likeditems
       // currently item is not fav
       // so, removee it from likedAds
-      log('false, add it');
       ref.read(likedItemControllerProvider).addLikedItem(widget.model!.itemId);
     }
   }
 
   postAdvertisement(WidgetRef ref) async {
-    log('post ad started');
-    log('add state at st of post ad ${ref.read(advertisementProvider).name}');
     ref.read(isLoadingProvider.notifier).state = true;
     final advertisementState = ref.watch(advertisementProvider);
     final userDetails = ref.read(userProvider);
@@ -432,12 +419,9 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     // itemId - itemNameInitial+price+userUid
     String itemId = advertisementState.name + advertisementState.price + ref.read(userProvider).userUid;
     ref.read(advertisementProvider.notifier).setAdvertisementId(itemId: itemId);
-    log('item id is ' + itemId);
 
     await convertToDownloadableUrls();
 
-    log('length of global downloadable imag urls' + downloadableImageUrls.length.toString());
-    log(downloadableImageUrls[0]);
     // creating user model to display information to the displayitemscreen
     AdvertisementModel model = AdvertisementModel(
       itemId: itemId,
@@ -457,13 +441,11 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
 
     // clearing global downloadableImageUrls if there are any....
     if (downloadableImageUrls.isNotEmpty) {
-      log(downloadableImageUrls.length.toString());
       downloadableImageUrls.clear();
     }
     ref.read(isLoadingProvider.notifier).state = false;
 
     ref.read(currentScrrenIndexProvider.notifier).state = 2;
-    log('post ad ended');
   }
 
   uploadToDatabase(AdvertisementModel model, String itemId) async {
@@ -476,21 +458,16 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
   }
 
   updateAdd() async {
-    log('updating the add');
     ref.read(isLoadingProvider.notifier).state = true;
     final addController = ref.read(advertisementControllerProvider);
     final advertisementState = ref.read(advertisementProvider);
 
-    log('selecteduint8imglist img len ${selectedUint8Imageslist.length}');
     // Convert all images into downloadable format
     await convertToDownloadableUrlsForUpdation(selectedUint8Imageslist);
 
-    log('updatedImgdownurls list img len ${updatedImageDownloadUrls.length}');
     // Remove duplicates
     List<String> uniqueUpdatedImageDownloadUrls = updatedImageDownloadUrls.toSet().toList();
-    log('updatedImgdownurls set img len ${updatedImageDownloadUrls.length}');
 
-    log('item id in updation ${advertisementState.itemId}');
 
     // Update the advertisement
     await addController.updateAdvertisement(
@@ -521,7 +498,6 @@ class _DisplayItemScreenState extends ConsumerState<DisplayItemScreen> {
     List<String> downloadUrls = [];
     if (widget.imagesInUint8 != null && widget.imagesInUint8!.isNotEmpty) {
       final addState = ref.watch(advertisementProvider);
-      log('item id in conv down ${addState.itemId}');
       for (var image in widget.imagesInUint8!) {
         String downloadUrl = await StorageServices().getDownloadURLs(image, addState.itemId, image.hashCode);
         downloadUrls.add(downloadUrl);

@@ -1,7 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/custom_widgets/chat_tile.dart';
+import 'package:seller_app/common/custom_widgets/chat_tile.dart';
 import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/features/chat/chat_screens/chatting_screen.dart';
 import 'package:seller_app/models/advertisement_model.dart';
@@ -293,16 +292,13 @@ class _SellingChatsState extends ConsumerState<SellingChats> {
     List<AdvertisementModel> addModels = [];
     final chatController = ref.watch(chatControllerProvider);
     for (var element in models) {
-      log(element.itemId);
       AdvertisementModel advertisementModel = await chatController.getAdvertisementById(element.itemId);
       addModels.add(advertisementModel);
 
       // to get the username of the buyer to display in chats
       final userdocument = await chatController.fetchUserDetailsWithUid(element.buyerId);
-      log(userdocument.email);
       buyerNames.add(userdocument);
     }
-    log(buyerNames.length.toString());
     return addModels;
   }
 }

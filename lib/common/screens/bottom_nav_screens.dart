@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/current_screen_provider.dart';
+import 'package:seller_app/providers/current_screen_provider.dart';
 import 'package:seller_app/features/chat/chat_screens/display_chat_screen.dart';
-import 'package:seller_app/features/home/display_screens/display_account_screen.dart';
-import 'package:seller_app/features/home/display_screens/display_home_screen.dart';
+import 'package:seller_app/features/home/home_screens/account_screen.dart';
+import 'package:seller_app/features/home/home_screens/home_screen.dart';
 import 'package:seller_app/features/advertisement/screens/display_my_ads_screen.dart';
 import 'package:seller_app/features/advertisement/screens/display_sell_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class BottomNavBar extends ConsumerStatefulWidget {
+  const BottomNavBar({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _BottomNavBarState extends ConsumerState<BottomNavBar> {
   // bottom nav screens list
   final List<Widget> _screens = [
-    const DisplayHomeScreen(),
+    const HomeScreen(),
     const DisplayChatScreen(),
     const MyAdsScreen(),
     const AccountScreen(),
@@ -173,6 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
+  
 }
 
 class CustomBottomNavItem extends ConsumerWidget {

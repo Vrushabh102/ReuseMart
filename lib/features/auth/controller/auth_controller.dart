@@ -1,16 +1,16 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/current_screen_provider.dart';
-import 'package:seller_app/core/Providers/is_loading_provider.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/current_screen_provider.dart';
+import 'package:seller_app/providers/is_loading_provider.dart';
+import 'package:seller_app/providers/user_provider.dart';
 import 'package:seller_app/features/auth/repository/auth_repository.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
 import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/user_model.dart';
-import 'package:seller_app/features/home/home_screen.dart';
 import 'package:seller_app/utils/screen_sizes.dart';
+
+import '../../home/home_screens/home_screen.dart';
 
 // provider for auth controller
 final authControllerProvider = Provider(
@@ -21,7 +21,6 @@ final authControllerProvider = Provider(
 );
 
 final authStateChangeStreamProvider = StreamProvider((ref) {
-  log('authstreamprovider is called');
   final authController = ref.watch(authControllerProvider);
   return authController.authStateChange;
 });
@@ -39,19 +38,16 @@ class AuthController {
 
   // this is authController.....
   signInWithGoogle(BuildContext context, bool isOnCreateAccountScreen) async {
-    log('sign in with google started');
     // to show loading
     _ref.read(isLoadingProvider.notifier).state = true;
     final user = await _authRepository.signInWithGoogle();
     user.fold((error) {
-      log('snackbar');
       _ref.read(isLoadingProvider.notifier).state = false;
       return showSnackBar(context: context, message: error.message);
     }, (userModel) {
       // add recived userModel data to the userProvider
       _ref.read(userProvider.notifier).setUserDetails(userModel!);
       // store the data user data in provider.......
-      log('now what?...');
       _ref.read(isLoadingProvider.notifier).state = false;
       _ref.read(currentScrrenIndexProvider.notifier).state = 0;
       Navigator.pushAndRemoveUntil(

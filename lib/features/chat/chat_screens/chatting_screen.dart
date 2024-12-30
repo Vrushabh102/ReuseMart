@@ -1,11 +1,10 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
 import 'package:seller_app/core/constants.dart';
-import 'package:seller_app/core/custom_widgets/chat_bubble.dart';
+import 'package:seller_app/common/custom_widgets/chat_bubble.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/features/chat/chat_controller/chat_controller.dart';
 import 'package:seller_app/models/advertisement_model.dart';
@@ -168,7 +167,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
               controller: textController,
               onSubmitted: (value) {
                 if (value.isNotEmpty) {
-                  log('message sent from chatting screen');
                   sendMessage(value.trim());
                   textController.clear();
                   focusNode.requestFocus();
@@ -207,7 +205,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             child: IconButton(
               onPressed: () {
                 if (textController.text.isNotEmpty) {
-                  log('message sent from chatting screen');
                   sendMessage(textController.text.trim());
                   textController.clear();
                   scrollToBottom();
@@ -231,10 +228,8 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
     String chatId;
     if (widget.isCurrentUserSelling) {
       chatId = '${widget.addmodel.itemId}_${widget.userModel!.userUid}';
-      log('fetch messgae isSelling is true $chatId');
     } else {
       chatId = '${widget.addmodel.itemId}_${auth.currentUser!.uid}';
-      log('fetch message isSelling is false $chatId');
     }
 
     final buildMessagestraemProvider = ref.watch(buildMessagesStreamProvider(chatId));
@@ -256,8 +251,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
         }
       },
       error: (error, stackTrace) {
-        log('An error has occurred');
-        log(error.toString());
         return Center(
           child: Text('An error has occurred: $error'),
         );
@@ -290,7 +283,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
       alignment: alignment,
       child: InkWell(
         onTap: () {
-          log(document['message']);
         },
         onLongPress: () {
           showAlertDialog(context, () async {

@@ -1,21 +1,20 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/advertisement_provider.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
-import 'package:seller_app/core/custom_widgets/item_container.dart';
+import 'package:seller_app/providers/advertisement_provider.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
+import 'package:seller_app/common/custom_widgets/item_container.dart';
 import 'package:seller_app/features/advertisement/add_controller/add_controller.dart';
 import 'package:seller_app/features/advertisement/screens/view_advertisement_screen.dart';
 import 'package:seller_app/utils/colors.dart';
 
-class DisplayHomeScreen extends ConsumerStatefulWidget {
-  const DisplayHomeScreen({super.key});
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  ConsumerState<DisplayHomeScreen> createState() => _DisplayHomeScreenState();
+  ConsumerState<HomeScreen> createState() => HomeScreenState();
 }
 
-class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
+class HomeScreenState extends ConsumerState<HomeScreen> {
   final _searchController = TextEditingController();
 
   @override
@@ -189,7 +188,6 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
             if (value.isEmpty) {
               ref.read(searchQueryProvider.notifier).update((state) => '');
               ref.read(searchResultsProvider.notifier).update((state) => false);
-              log('changed state to ' ' at line 127');
             }
           },
           keyboardType: TextInputType.text,
@@ -200,7 +198,6 @@ class _DisplayHomeScreenState extends ConsumerState<DisplayHomeScreen> {
             if (value.isNotEmpty) {
               ref.read(searchQueryProvider.notifier).update((state) => value.trim());
               // ref.read(searchResultsProvider.notifier).update((state) => false);
-              log('changed state to ${value}');
               ref.read(searchResultsProvider.notifier).update(
                     (state) => true,
                   );

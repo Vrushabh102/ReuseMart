@@ -1,9 +1,8 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
 import 'package:seller_app/models/chat_message_model.dart';
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
@@ -69,7 +68,6 @@ class ChatRepository {
 
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchMessagesByChatId(String chatId) {
     return _firestore.collection('chat_rooms').doc(chatId).collection('messages').orderBy('timestamp', descending: false).snapshots().handleError((error) {
-      log('some error occured at fetching messages');
     });
   }
 }

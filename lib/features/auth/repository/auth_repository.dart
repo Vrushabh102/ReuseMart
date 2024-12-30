@@ -1,11 +1,10 @@
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
 import 'package:seller_app/core/failure.dart';
 import 'package:seller_app/core/type_defs.dart';
 import 'package:seller_app/models/user_model.dart';
@@ -34,7 +33,6 @@ class AuthRepository {
   CollectionReference get _users => _firestore.collection('users');
 
   Stream<User?> get authStateChange {
-    log('auth state changed');
     return _auth.authStateChanges();
   }
 
@@ -46,7 +44,6 @@ class AuthRepository {
 
   FutureEither<UserModel?> signInWithGoogle() async {
     try {
-      log('inside auth repository');
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       // Check if there's an existing Google sign-in
@@ -70,7 +67,6 @@ class AuthRepository {
       UserModel userModel;
 
       if (userCredential.additionalUserInfo!.isNewUser) {
-        log('user at auth repo is new');
         userModel = UserModel(
           likedAds: const [],
           photoUrl: userCredential.user!.photoURL,
@@ -91,7 +87,6 @@ class AuthRepository {
     } on FirebaseAuthException catch (e) {
       throw e.message!;
     } catch (error) {
-      log('error at google sign in $error');
       return left(Failure(error.toString()));
     }
   }
@@ -109,7 +104,6 @@ class AuthRepository {
   // firebase function to create new user
   FutureEither<UserModel> createUserAuth(String name, String email, String gender, String password) async {
     try {
-      log('now starting create user function in auth repo');
       // storing returned user from firebase.createuser function
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
 
@@ -128,14 +122,11 @@ class AuthRepository {
 
       return right(userModel);
     } on FirebaseAuthException catch (e) {
-      log(e.toString());
       if (e.code == 'email-already-in-use') {
-        log('firebase error');
         return left(Failure('The email address is already in use by another account.'));
       }
       return left(Failure(e.code));
     } catch (e) {
-      log('Error creating new user $e');
       return left(Failure(e.toString()));
     }
   }
@@ -148,11 +139,9 @@ class AuthRepository {
       final userDoc = await _users.doc(userCredential.user!.uid).get() as DocumentSnapshot<Map<String, dynamic>>;
       UserModel model = UserModel.fromSnapshot(userDoc);
 
-      log(userCredential.user!.email ?? 'No email');
       // save user data to the user provider
       return right(model);
     } on FirebaseAuthException catch (e) {
-      log('error logging in user ${e.message}');
       return left(Failure(e.message.toString()));
     } catch (e) {
       return left(Failure(e.toString()));
@@ -166,7 +155,6 @@ class AuthRepository {
       return right(forgotPass);
     } on FirebaseAuthException catch (e) {
       // show snackbar
-      log('error forgotting pass $e');
       return left(Failure(e.toString()));
     } catch (e) {
       return left(Failure(e.toString()));
@@ -187,7 +175,6 @@ class AuthRepository {
 
       return right(signOut);
     } on FirebaseAuthException catch (e) {
-      log('error logging out $e');
       return left(Failure(e.code.toString()));
     } catch (e) {
       return left(Failure(e.toString()));

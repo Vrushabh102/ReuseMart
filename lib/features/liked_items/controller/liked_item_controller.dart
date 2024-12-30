@@ -1,9 +1,8 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/user_provider.dart';
 import 'package:seller_app/features/liked_items/repository/liked_items_repo.dart';
 import 'package:seller_app/models/advertisement_model.dart';
 
@@ -48,7 +47,6 @@ class LikedItemController {
   }
 
   Future<void> _updateLikedItemList() async {
-    log('update liked item');
     final likedAdsList = _ref.read(userProvider).likedAds;
     await _likedItemRepository.updateLikedItems(likedAdsList);
   }

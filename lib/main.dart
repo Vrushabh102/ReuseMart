@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/user_provider.dart';
 import 'package:seller_app/features/auth/controller/auth_controller.dart';
 import 'package:seller_app/firebase_options.dart';
 import 'package:seller_app/models/user_model.dart';
 import 'package:seller_app/features/auth/screens/login_screen.dart';
-import 'package:seller_app/features/home/home_screen.dart';
+import 'package:seller_app/common/screens/bottom_nav_screens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seller_app/utils/colors.dart';
 
@@ -62,7 +62,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         data: (data) {
           if (data != null) {
             getUserData(ref, data);
-            return const HomeScreen();
+            return const BottomNavBar();
           } else {
             return const LoginScreen();
           }

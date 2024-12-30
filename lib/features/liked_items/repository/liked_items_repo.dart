@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seller_app/core/Providers/firebase_providers.dart';
-import 'package:seller_app/core/Providers/user_provider.dart';
+import 'package:seller_app/providers/firebase_providers.dart';
+import 'package:seller_app/providers/user_provider.dart';
 
 final likedItemRepository = Provider<LikedItemRepository>((ref) {
   return LikedItemRepository(firebaseFirestore: ref.read(firebaseFirestoreProvider), ref: ref);

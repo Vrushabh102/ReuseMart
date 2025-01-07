@@ -3,6 +3,14 @@
 
 ReuseMart is a mobile application enabling users to sell and buy used items online.
 
+<ul>
+  <li>Firebase Authentication</li>
+  <li>Cloud Firestore database</li>
+  <li>Riverpod state management</li>
+  <li>Real-time messaging</li>
+  <li>JSON serialization</li>
+</ul>
+
 Youtube video: https://www.youtube.com/watch?v=Rnj2f7ytW9U
 
 ## Screenshots

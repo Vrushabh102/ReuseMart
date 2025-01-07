@@ -3,6 +3,8 @@
 
 ReuseMart is a mobile application enabling users to sell and buy used items online.
 
+Youtube video: https://www.youtube.com/watch?v=Rnj2f7ytW9U
+
 ## Screenshots
 
 <h4>Authentication </h4>
@@ -39,4 +41,3 @@ ReuseMart is a mobile application enabling users to sell and buy used items onli
 
 <br>
 
-Youtube video: https://www.youtube.com/watch?v=Rnj2f7ytW9U
